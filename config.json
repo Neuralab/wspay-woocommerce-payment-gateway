@@ -1,0 +1,4 @@
+{
+  "test_request_url": "https://formtest.wspay.biz/Authorization.aspx",
+  "production_request_url": "https://form.wspay.biz/Authorization.aspx"
+}
