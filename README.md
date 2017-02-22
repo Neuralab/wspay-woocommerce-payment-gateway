@@ -1,4 +1,4 @@
-# WSPay-WooCommercePayment-Gateway
+# WSPay WooCommerce Payment Gateway
 
 
 ## Synopsis
