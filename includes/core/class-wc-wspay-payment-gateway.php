@@ -228,7 +228,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
      * @return string
      */
     private function process_order_total( $order ) {
-      $order_total = explode( ".", $order->order_total );
+      $order_total = explode( ".", $order->get_total() );
 
       if( empty( $order_total[1] ) ) {
         return $order_total[0] . ",00";
@@ -297,7 +297,6 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
      */
     private function get_params_form( $request_url, $wspay_params, $show_controls = true ) {
       $form = "<form action='" . esc_attr( $request_url ) . "' method='POST' name='pay' id='wcwspay-form'>";
-
       foreach( $wspay_params as $key => $param ) {
         $form .= "<input type='hidden' name='" . esc_attr( $key ) . "' value='" . esc_attr( $param ) . "' />";
       }
@@ -338,18 +337,22 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         "Signature"           => $signature,
         "ReturnURL"           => $return_url,
         "ReturnErrorURL"      => $return_url,
-        "CancelURL"           => $order->get_cancel_order_url(),
+        "CancelURL"           => $order->get_cancel_order_url_raw(),
         // optionals parameters:
         "Lang"                => $form_lang,
-        "CustomerFirstName"   => $order->billing_first_name,
-        "CustomerLastName"    => $order->billing_last_name,
-        "CustomerAddress"     => $order->billing_address_1 . ", " . $order->billing_address_2,
-        "CustomerCity"        => $order->billing_city,
-        "CustomerZIP"         => $order->billing_postcode,
-        "CustomerCountry"     => $order->billing_country,
-        "CustomerEmail"       => $order->billing_email,
-        "CustomerPhone"       => $order->billing_phone
+        "CustomerFirstName"   => $order->get_billing_first_name(),
+        "CustomerLastName"    => $order->get_billing_last_name(),
+        "CustomerAddress"     => $order->get_billing_address_1(),
+        "CustomerCity"        => $order->get_billing_city(),
+        "CustomerZIP"         => $order->get_billing_postcode(),
+        "CustomerCountry"     => $order->get_billing_country(),
+        "CustomerEmail"       => $order->get_billing_email(),
+        "CustomerPhone"       => $order->get_billing_phone()
       );
+
+      if ( !empty($order->get_billing_address_2()) ) {
+         $wspay_params["CustomerAddress"] .= ", " . $order->get_billing_address_2();
+      }
 
       return $wspay_params;
     }
@@ -367,7 +370,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
 
         if( function_exists( "wc_add_notice" ) ) {
           wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
-        } // TODO add legacy support!
+        }
         return false;
 
       } else if ( $response["ErrorMessage"] === "ODBIJENO" ) {
@@ -393,7 +396,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $order    = new WC_Order( $order_id );
 
       if ( !$this->is_wspay_response_valid( $response, $order ) ) {
-        wp_redirect( $woocommerce->cart->get_checkout_url());
+        wp_redirect( wc_get_checkout_url() );
         exit;
       }
 
@@ -404,7 +407,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       if ( $is_signature_valid ) {
         $order->add_order_note( __( "Payment completed via WSPay!", "wcwspay" ) );
         $order->payment_complete();
-        $order->reduce_order_stock();
+
+        wc_reduce_stock_levels( $order->get_id() );
         $woocommerce->cart->empty_cart();
 
         wp_redirect( $this->get_return_url($order) );
