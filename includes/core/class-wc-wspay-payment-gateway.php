@@ -30,9 +30,9 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       require_once( dirname( plugin_dir_path(__FILE__) ) . "/utilities/class-wc-wspay-config.php" );
       $this->config = new WC_WSPay_Config();
 
-      $this->id             = "neuralab-wcwspay";
-      $this->method_title 	= __( "WSPay", "wcwspay" );
-      $this->has_fields     = true;
+      $this->id           = "neuralab-wcwspay";
+      $this->method_title = __( "WSPay", "wcwspay" );
+      $this->has_fields   = true;
 
       $this->init_form_fields();
       $this->init_settings();
@@ -193,7 +193,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
      * @param int $order_id
      */
     public function do_receipt_page( $order_id ) {
-      $auto_redirect = ( $this->settings["auto-redirect"] === "yes" ) ? true : false;
+      $auto_redirect = $this->settings["auto-redirect"] === "yes";
       if ( !$auto_redirect ) {
         $this->show_receipt_message();
       }
@@ -217,9 +217,9 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     private function get_request_url() {
       if ( $this->settings["use-wspay-sandbox"] === "yes" ) {
         return $this->config->get( "test_request_url" );
-      } else {
-        return $this->config->get( "production_request_url" );
       }
+
+      return $this->config->get( "production_request_url" );
     }
 
     /**
@@ -253,9 +253,9 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
 
       if ( empty($shop_id) || empty($secret_key) || empty($order_id) || empty($order_total) ) {
         return false;
-      } else {
-        return md5( $shop_id . $secret_key . $order_id . $secret_key . $order_total . $secret_key );
       }
+
+      return md5( $shop_id . $secret_key . $order_id . $secret_key . $order_total . $secret_key );
     }
 
     /**
@@ -273,9 +273,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $new_signature = md5( $shop_id . $secret_key . $order_id . $secret_key . $success . $secret_key . $approval_code . $secret_key );
       if ( $incoming_signature === $new_signature ) {
         return true;
-      } else {
-        return false;
       }
+      return false;
     }
 
     /**
