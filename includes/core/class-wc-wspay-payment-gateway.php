@@ -217,10 +217,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       if ( $this->settings["use-wspay-sandbox"] === "yes" ) {
         return $this->config->get( "test_request_url" );
       }
-<<<<<<< HEAD
-=======
 
->>>>>>> 12598e0101f4768512a385674293da5ecd4e4222
       return $this->config->get( "production_request_url" );
     }
 
@@ -331,7 +328,6 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       }
 
       $wspay_params = array(
-<<<<<<< HEAD
         "ShopID"            => $shop_id,
         "ShoppingCartID"    => $order_id,
         "TotalAmount"       => $order_total,
@@ -349,25 +345,6 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         "CustomerCountry"   => $order->get_billing_country(),
         "CustomerEmail"     => $order->get_billing_email(),
         "CustomerPhone"     => $order->get_billing_phone()
-=======
-        "ShopID"              => $shop_id,
-        "ShoppingCartID"      => $order_id,
-        "TotalAmount"         => $order_total,
-        "Signature"           => $signature,
-        "ReturnURL"           => $return_url,
-        "ReturnErrorURL"      => $return_url,
-        "CancelURL"           => $order->get_cancel_order_url_raw(),
-        // optionals parameters:
-        "Lang"                => $form_lang,
-        "CustomerFirstName"   => $order->get_billing_first_name(),
-        "CustomerLastName"    => $order->get_billing_last_name(),
-        "CustomerAddress"     => $order->get_billing_address_1(),
-        "CustomerCity"        => $order->get_billing_city(),
-        "CustomerZIP"         => $order->get_billing_postcode(),
-        "CustomerCountry"     => $order->get_billing_country(),
-        "CustomerEmail"       => $order->get_billing_email(),
-        "CustomerPhone"       => $order->get_billing_phone()
->>>>>>> 12598e0101f4768512a385674293da5ecd4e4222
       );
 
       if ( !empty($order->get_billing_address_2()) ) {
