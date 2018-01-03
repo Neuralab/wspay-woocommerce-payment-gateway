@@ -62,7 +62,6 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
       if ( !current_user_can( "activate_plugins" ) ) {
         return;
       }
-
     }
 
     /**
@@ -70,7 +69,7 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      */
     public static function uninstall() {
       if ( !current_user_can( "activate_plugins" ) ) {
-	      return;
+        return;
       }
 
       delete_option( "woocommerce_neuralab-wcwspay_settings" );
@@ -94,13 +93,13 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
     public function __clone() {
       _doing_it_wrong( __FUNCTION__, __( "Cloning is forbidden!", "wcwspay" ), "4.7" );
     }
+
     /**
      * Unserializing instances of this class is forbidden
      */
     public function __wakeup() {
       _doing_it_wrong( __FUNCTION__, __( "Unserializing instances is forbidden!", "wcwspay" ), "4.7" );
     }
-
   }
 }
 

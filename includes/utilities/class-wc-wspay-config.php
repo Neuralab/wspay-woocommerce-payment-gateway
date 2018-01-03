@@ -10,7 +10,7 @@ if ( !class_exists( "WC_WSPay_Config" ) ) {
     private $data = null;
 
     /**
-     * Class constructor, trys to load data with default file name
+     * Trys to load data with the default file name
      */
     public function __construct() {
       $this->load_from_file();
@@ -37,7 +37,7 @@ if ( !class_exists( "WC_WSPay_Config" ) ) {
     /**
      * Returns the value of config field if exists or false if it doesn't.
      * @param string $field_name
-     * @return mixed - value of config field or false
+     * @return string|boolean: value of config field or false
      */
     public function get( $field_name ) {
       if ( empty($this->data) && gettype($this->data) !== "object" ) {
