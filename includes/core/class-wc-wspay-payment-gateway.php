@@ -16,12 +16,26 @@ function wcwspay_add_gateway( $methods ) {
   $methods[] = "WC_WSPay_Payment_Gateway";
   return $methods;
 }
-add_filter( "woocommerce_payment_gateways", 'wcwspay_add_gateway' );
+add_filter( "woocommerce_payment_gateways", "wcwspay_add_gateway" );
 
 if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
   class WC_WSPay_Payment_Gateway extends WC_Payment_Gateway {
-
+    /**
+     * Config object, should contain all the data for the choosen env.
+     * @var WC_WSPay_Config
+     */
     private $config = null;
+
+    /**
+     * Whether or not logging is enabled.
+     * @var boolean
+     */
+   	public $log_enabled = false;
+
+    /**
+     * @var WC_Logger
+     */
+  	public $loggger = false;
 
     /**
      * Class constructor with basic gateway's setup
@@ -33,6 +47,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $this->id           = "neuralab-wcwspay";
       $this->method_title = __( "WSPay", "wcwspay" );
       $this->has_fields   = true;
+      $this->log_enabled = $this->get_option("use-logger") === "yes";
 
       $this->init_form_fields();
       $this->init_settings();
@@ -57,96 +72,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
      * @override
      */
     public function init_form_fields() {
-      $this->form_fields = array(
-        "enabled" => array(
-          "title"     => __( "Enable", "wcwspay" ),
-          "type"      => "checkbox",
-          "label"     => __( "Enable WSPay Payment Gateway", "wcwspay" ),
-          "default"   => "no",
-          "desc_tip"  => false
-        ),
-        "title" => array(
-          "title"       => __( "Title", "wcwspay" ),
-          "type"        => "text",
-          "description" => __( "This controls the title which the user sees during the checkout.", "wcwspay" ),
-          "default"     => __( "WSPay", "wcwspay" ),
-          "desc_tip"    => true
-        ),
-        "description-msg" => array(
-          "title"       => __( "Description", "wcwspay" ),
-          "type"        => "textarea",
-          "description" => __( "Payment method description that the customer will see on your checkout.", "wcwspay" ),
-          "default"     => "",
-          "desc_tip"    => true
-        ),
-        "confirmation-msg" => array(
-          "title"       => __( "Confirmation", "wcwspay" ),
-          "type"        => "textarea",
-          "description" => __( "Confirmation message that will be added to the 'thank you' page.", "wcwspay" ),
-          "default"     => __( "Your account has been charged and your transaction is successful.", "wcwspay" ),
-          "desc_tip"    => true
-        ),
-        "receipt-redirect-msg" => array(
-          "title"       => __( "Receipt", "wcwspay" ),
-          "type"        => "textarea",
-          "description" => __( "Message that will be added to the 'receipt' page. Shown if automatic redirect is enabled.", "wcwspay" ),
-          "default"     => __( "Please click on the button below.", "wcwspay" ),
-          "desc_tip"    => true
-        ),
-        "shop-id" => array(
-          "title"       => __( "Shop ID", "wcwspay" ),
-          "type"        => "text",
-          "description" => __( "Web shop's unique identification string.", "wcwspay" ),
-          "default"     => "",
-          "desc_tip"    => true
-        ),
-        "secret-key" => array(
-          "title"       => __( "Secret Key", "wcwspay" ),
-          "type"        => "password",
-          "description" => __( "Secret key for signing orders.", "wcwspay" ),
-          "default"     => "",
-          "desc_tip"    => true
-        ),
-        "form-language" => array(
-          "title"       => __( "Form Language", "wcwspay" ),
-          "type"        => "select",
-          "description" => __( "Language of the WSPay form.", "wcwspay" ),
-          "default"     => "EN",
-          "desc_tip"    => true,
-          "options"     => array(
-            "HR"  => __( "Croatian", "wcwspay" ),
-            "CZ"  => __( "Czech", "wcwspay" ),
-            "NL"  => __( "Dutch", "wcwspay" ),
-            "EN"  => __( "English", "wcwspay" ),
-            "FR"  => __( "French", "wcwspay" ),
-            "DE"  => __( "German", "wcwspay" ),
-            "HU"  => __( "Hungarian", "wcwspay" ),
-            "IT"  => __( "Italian", "wcwspay" ),
-            "PL"  => __( "Polish", "wcwspay" ),
-            "PT"  => __( "Portuguese", "wcwspay" ),
-            "RU"  => __( "Russian", "wcwspay" ),
-            "SK"  => __( "Slovak", "wcwspay" ),
-            "SL"  => __( "Slovenian", "wcwspay" ),
-            "ES"  => __( "Spanish", "wcwspay" ),
-          )
-        ),
-        "auto-redirect" => array(
-          "title"       => __( "Automatic redirect", "wcwspay" ),
-          "type"        => "checkbox",
-          "label"       => __( "Enable automatic redirect to the WSPay Form.", "wcwspay" ),
-          "description" => __( "This option is using JavaScript (Ajax).", "wcwspay" ),
-          "default"     => "yes",
-          "desc_tip"    => true
-        ),
-        "use-wspay-sandbox" => array(
-          "title"       => __( "WSPay Sandbox", "wcwspay" ),
-          "type"        => "checkbox",
-          "label"       => __( "Enable WSPay Sandbox.", "wcwspay" ),
-          "description" => __( "Sandbox is used for testing purposes, disable this for live web shops.", "wcwspay" ),
-          "default"     => "no",
-          "desc_tip"    => true
-        )
-      );
+      $this->form_fields = include( "wc-wspay-settings.php" );
     }
 
     /**
@@ -196,11 +122,14 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $auto_redirect = $this->settings["auto-redirect"] === "yes";
       if ( !$auto_redirect ) {
         $this->show_receipt_message();
+      } else {
+        $this->log( "Redirecting user's Order #" . $order_id . " to WsPay form." );
       }
 
       $wspay_params = $this->get_wspay_params( $order_id );
       $request_url  = $this->get_request_url();
       if ( empty($request_url) || !is_string($request_url) ) {
+        $this->log( "Missing request URL.", "error" );
         return;
       }
       echo $this->get_params_form( $request_url, $wspay_params, !$auto_redirect );
@@ -217,7 +146,6 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       if ( $this->settings["use-wspay-sandbox"] === "yes" ) {
         return $this->config->get( "test_request_url" );
       }
-
       return $this->config->get( "production_request_url" );
     }
 
@@ -251,6 +179,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $order_total = str_replace( [",", "."], "", $order_total );
 
       if ( empty($shop_id) || empty($secret_key) || empty($order_id) || empty($order_total) ) {
+        $this->log( "Missing data for generating encrypted signature", "error" );
         return false;
       }
 
@@ -324,6 +253,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $form_lang   = $this->settings["form-language"];
       $signature   = $this->get_signature( $order_id, $order_total, $shop_id, $secret_key );
       if ( empty($signature) || !is_string($signature) ) {
+        $this->log( "Invalid signature", "error" );
         return;
       }
 
@@ -363,22 +293,23 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
      */
     private function is_wspay_response_valid( $response, $order ) {
       if ( intval( $response["Success"] ) !== 1 ) {
-        $order->update_status( "pending", __( "Payment unsuccesful", "wcwspay" ) );
+        if ( $response["ErrorMessage"] === "ODBIJENO" ) {
+          $this->log( "Payment for Order #" . $order->get_order_number() . " denied.", "error" );
+          $order->update_status( "pending", __( "Payment denied", "wcwspay" ) );
 
-        if( function_exists( "wc_add_notice" ) ) {
-          wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
-        }
-        return false;
+          if( function_exists( "wc_add_notice" ) ) {
+            wc_add_notice( __( "Payment for order " . $order->get_order_number() . " rejected!", "wcwspay" ) . " " . __( "Please contact site administrator.", "wcwspay"), $notice_type = "error" );
+          }
+        } else {
+          $this->log( "Payment for Order #" . $order->get_order_number() ." unsuccesful. Reason: " . $response["ErrorMessage"], "error" );
+          $order->update_status( "pending", __( "Payment unsuccesful", "wcwspay" ) );
 
-      } else if ( $response["ErrorMessage"] === "ODBIJENO" ) {
-        $order->update_status( "pending", __( "Payment denied", "wcwspay" ) );
-
-        if( function_exists( "wc_add_notice" ) ) {
-          wc_add_notice( __( "Payment for order " . $order->get_order_number() . " rejected!", "wcwspay" ) . " " . __( "Please contact site administrator.", "wcwspay"), $notice_type = "error" );
+          if( function_exists( "wc_add_notice" ) ) {
+            wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
+          }
         }
         return false;
       }
-
       return true;
     }
 
@@ -389,9 +320,20 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       global $woocommerce;
 
       $response = $_GET;
+      $this->log( "Response received from WSPay." );
       $success  = intval( $response["Success"] );
       $order_id = intval( $response["ShoppingCartID"] );
       $order    = new WC_Order( $order_id );
+
+      if ( !is_a( $order, "WC_Order" ) ) {
+        $this->log( "Order #" . $order_id . " not found", "error" );
+        if( function_exists( "wc_add_notice" ) ) {
+          wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
+        }
+
+        wp_redirect( wc_get_checkout_url() );
+        exit;
+      }
 
       if ( !$this->is_wspay_response_valid( $response, $order ) ) {
         wp_redirect( wc_get_checkout_url() );
@@ -403,6 +345,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
 
       $is_signature_valid = $this->is_incoming_signature_valid( $signature, $order_id, $this->settings["shop-id"], $this->settings["secret-key"], $success, $approval_code );
       if ( $is_signature_valid ) {
+        $this->log( "Payment for Order #" . $order->get_order_number() . " completed." );
         $order->add_order_note( __( "Payment completed via WSPay!", "wcwspay" ) );
         $order->payment_complete();
 
@@ -412,6 +355,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         wp_redirect( $this->get_return_url($order) );
         exit;
       } else {
+        $this->log( "Signatures mismatch for Order #" . $order->get_order_number() . "." );
         $order->add_order_note( __( "Payment was successful but signatures mismatch was detected. Possible illegal activity!", "wcwspay" ) );
         wp_die( "Possible illegal activity!" );
       }
@@ -419,7 +363,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Process the payment and return the result
+     * Process the payment and return the result.
      * @override
      * @param string $order_id
      * @return array
@@ -427,9 +371,23 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     public function process_payment( $order_id ) {
       $order = new WC_Order( $order_id );
       return array(
-        "result"    => "success",
-        "redirect"  => $order->get_checkout_payment_url( true )
+        "result"   => "success",
+        "redirect" => $order->get_checkout_payment_url( true )
       );
+    }
+
+    /**
+     * Logging method.
+     * @param string $message
+     * @param string $level: emergency|alert|critical|error|warning|notice|info|debug
+     */
+    public function log( $message, $level = "info" ) {
+      if ( $this->log_enabled ) {
+        if ( empty( $this->logger ) ) {
+          $this->logger = wc_get_logger();
+        }
+        $this->logger->log( $level, $message, array( "source" => "wcwspay" ) );
+      }
     }
 
   }
