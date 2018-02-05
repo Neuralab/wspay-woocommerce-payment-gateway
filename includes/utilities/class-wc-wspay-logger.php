@@ -111,9 +111,6 @@ if ( !class_exists( "WC_WSPay_Logger" ) ) {
 
         if ( $this->is_mailer_enabled ) {
           $log_level_index = array_search( $level, $this->log_levels, true );
-
-          $this->logger->log( $level, json_encode(array($log_level_index, $this->mailer_min_log_level_index)), array( "source" => "wcwspay" ) );
-
           if ($log_level_index && $log_level_index <= $this->mailer_min_log_level_index) {
             $this->send_mail($level, $message);
           }
