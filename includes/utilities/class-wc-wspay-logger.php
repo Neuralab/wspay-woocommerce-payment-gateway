@@ -15,18 +15,75 @@ if ( !class_exists( "WC_WSPay_Logger" ) ) {
     public $is_log_enabled = false;
 
     /**
-     * List of valid logger levels.
+     * List of valid logger levels, from most to least urgent.
      * @var array
      */
-    private $log_levels = [
-      'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'
+    public $log_levels = [
+      "emergency", "alert", "critical", "error", "warning", "notice", "info", "debug"
     ];
 
     /**
-     * Init logger.
+     * Is mailer system for certain errors enabled. Mailer system should send
+     * a mail notice do defined address if there was a message logged with
+     * defined min level.
+     * @var boolean
      */
-    public function __construct($is_log_enabled = false) {
+    private $is_mailer_enabled = false;
+
+    /**
+     * E-mail address for receving errors.
+     * @var string
+     */
+    private $mailer_address = null;
+
+    /**
+     * Minimum log level for triggering mailer.
+     * @var string
+     */
+    private $mailer_min_log_level = "error";
+
+    /**
+     * Minimum log level index for triggering mailer. Should be a position of
+     * $mailer_min_log_level in $log_levels array.
+     * @var string
+     */
+    private $mailer_min_log_level_index = 3;
+
+    /**
+     * Init logger.
+     * @param boolean $is_log_enabled: defaults to false
+     */
+    public function __construct( $is_log_enabled = false ) {
       $this->is_log_enabled = $is_log_enabled;
+    }
+
+    /**
+     * Enable mailer system and return true if successful.
+     * @param string  $mailer_address
+     * @param string $mailer_min_log_level: defaults to "error"
+     * @return boolean
+     */
+    public function enable_mailer( $email, $min_log_level = "error" ) {
+      $this->is_mailer_enabled = false;
+      if ( filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+        $this->mailer_address = $email;
+      } else {
+        return false;
+      }
+
+      $log_level_index = array_search( $min_log_level, $this->log_levels, true );
+      if ( $log_level_index ) {
+        $this->mailer_min_log_level = $min_log_level;
+        $this->mailer_min_log_level_index = $log_level_index;
+      } else {
+        return false;
+      }
+      $this->is_mailer_enabled = true;
+      return true;
+    }
+
+    public function disable_mailer() {
+      $this->is_mailer_enabled = false;
     }
 
     /**
@@ -45,17 +102,46 @@ if ( !class_exists( "WC_WSPay_Logger" ) ) {
             return false;
           }
         }
+
         // check if provided level is valid!
-        if ( !in_array($level, $this->log_levels) ) {
-          $this->logger->log( "debug", "Invalid log level provided: " . $level, array( "source" => "wcwspay" ) );
+        if ( !in_array( $level, $this->log_levels ) ) {
+          $this->log( "Invalid log level provided: " . $level, "debug" );
           $level = "notice";
         }
+
+        if ( $this->is_mailer_enabled ) {
+          $log_level_index = array_search( $level, $this->log_levels, true );
+
+          $this->logger->log( $level, json_encode(array($log_level_index, $this->mailer_min_log_level_index)), array( "source" => "wcwspay" ) );
+
+          if ($log_level_index && $log_level_index <= $this->mailer_min_log_level_index) {
+            $this->send_mail($level, $message);
+          }
+        }
+
         $this->logger->log( $level, $message, array( "source" => "wcwspay" ) );
 
         return true;
       }
 
       return false;
+    }
+
+    /**
+     *
+     */
+    private function send_mail($level, $message) {
+      if ($this->mailer_address) {
+        $subject = __( "WSpay Gateway", "wcwspay" ) . " " . ucfirst($level) .
+          " " . __( "notice", "wcwspay" );
+
+        $body = ucfirst($level) . " " . __( "event was logged at", "wcwspay" ) .
+          " " . date("d.m.Y. H:i:s") . ".\n";
+        $body .= __( "Event message", "wcwspay" ) . ": " . $message . "\n\n\n";
+        $body .= "Neuralab WooCommerce WSpay Payment Gateway";
+
+        wp_mail($this->mailer_address, $subject, $body);
+      }
     }
 
   }

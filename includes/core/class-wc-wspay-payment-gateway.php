@@ -41,7 +41,10 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $this->init_form_fields();
       $this->init_settings();
 
-      $this->logger = new WC_WSPay_Logger($this->get_option( "use-logger" ) === "yes");
+      $this->logger = new WC_WSPay_Logger( $this->settings["use-logger"] === "yes" );
+      if ( $this->settings["use-mailer"] === "yes" ) {
+        $this->logger->enable_mailer( $this->settings["mailer-address"], $this->settings["mailer-min-log-level"] );
+      }
       $this->wspay  = new WC_WSPay($this->logger);
 
       $this->title = esc_attr( $this->settings["title"] );
@@ -114,6 +117,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $auto_redirect = $this->settings["auto-redirect"] === "yes";
       if ( !$auto_redirect ) {
         $this->show_receipt_message();
+        $this->logger->log( "Displaying redirect form for user's Order #" . $order_id . "." );
       } else {
         $this->logger->log( "Redirecting user's Order #" . $order_id . " to WsPay form." );
       }
@@ -125,7 +129,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
 
       $request_url = $this->wspay->get_request_url( $this->settings["use-wspay-sandbox"] === "yes" );
       if ( empty($request_url) || !is_string($request_url) ) {
-        $this->logger->log( "Missing request URL.", "error" );
+        $this->logger->log( "Missing request URL.", "critical" );
         return;
       }
       echo $this->get_params_form( $request_url, $wspay_params, !$auto_redirect );
@@ -192,7 +196,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $order    = new WC_Order( $order_id );
       // is the provided order ID valid?
       if ( !is_a( $order, "WC_Order" ) ) {
-        $this->logger->log( "Order #" . $order_id . " not found", "error" );
+        $this->logger->log( "Order #" . $order_id . " not found", "critical" );
         if( function_exists( "wc_add_notice" ) ) {
           wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
         }
@@ -234,7 +238,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         wp_redirect( $this->get_return_url($order) );
         exit;
       } else {
-        $this->logger->log( "Signatures mismatch for Order #" . $order->get_order_number() . "." );
+        $this->logger->log( "Signatures mismatch for Order #" . $order->get_order_number() . ".", "critical" );
         $order->add_order_note( __( "Payment was successful but signatures mismatch was detected. Possible illegal activity!", "wcwspay" ) );
         wp_die( "Possible illegal activity!" );
       }

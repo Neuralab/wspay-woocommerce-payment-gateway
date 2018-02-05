@@ -100,4 +100,35 @@ return array(
     "default"     => "no",
     "description" => sprintf( __( "Log gateway events, stored in %s", "wcwspay" ), "<code>" . WC_Log_Handler_File::get_log_file_path( "wcwspay" ) . "</code>" )
   ),
+  "use-mailer" => array(
+    "title"       => __( "Log mailer", "wcwspay" ),
+    "type"        => "checkbox",
+    "label"       => __( "Enable log mailer", "wcwspay" ),
+    "default"     => "no",
+    "description" => __( "Sends log messages to defined e-mail address for defined minimum log level.", "wcwspay" ),
+  ),
+  "mailer-address" => array(
+    "type"        => "text",
+    "label"       => __( "Mailer address", "wcwspay" ),
+    "default"     => get_bloginfo( "admin_email"),
+    "desc_tip"    => true,
+    "description" => __( "Mailer's address. Defaults to admin email (set in Settings > General).", "wcwspay" ),
+  ),
+  "mailer-min-log-level" => array(
+    "type"        => "select",
+    "label"       => __( "Mailer minimum log level", "wcwspay" ),
+    "default"     => "error",
+    "desc_tip"    => true,
+    "description" => __( "Sorted by urgency. E.g. if 'Critical' is selected, mails will also be sent for 'Alert' and 'Emergency' log messages.", "wcwspay" ),
+    "options"     => array(
+      "emergency" => __( "Emergency", "wcwspay" ),
+      "alert"     => __( "Alert", "wcwspay" ),
+      "critical"  => __( "Critical", "wcwspay" ),
+      "error"     => __( "Error", "wcwspay" ),
+      "warning"   => __( "Warning", "wcwspay" ),
+      "notice"    => __( "Notice", "wcwspay" ),
+      "info"      => __( "Info", "wcwspay" ),
+      "debug"     => __( "Debug", "wcwspay" ),
+    )
+  ),
 );
