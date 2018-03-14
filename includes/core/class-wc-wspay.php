@@ -9,12 +9,15 @@ if ( !class_exists( "WC_WSPay" ) ) {
   class WC_WSPay {
     /**
      * Config object, should contain all the data for the choosen env.
+     *
      * @var WC_WSPay_Config
      */
     private $config = null;
 
     /**
      * Init WSPay settings.
+     *
+     * @codeCoverageIgnore
      * @param WC_WSPay_Logger $logger: defaults to null
      */
     public function __construct($logger = null) {
@@ -31,22 +34,30 @@ if ( !class_exists( "WC_WSPay" ) ) {
     /**
      * Check response for any error messages or invalid status. Return false
      * in case of error.
+     *
      * @param array    $response
      * @param WC_Order $order
      * @return boolean
      */
     public function is_response_valid( $response, $order ) {
-      if ( intval( $response["Success"] ) !== 1 ) {
-        if ( $response["ErrorMessage"] === "ODBIJENO" ) {
-          $this->logger->log( "Payment for Order #" . $order->get_order_number() . " denied.", "error" );
+      if ( !isset( $response["Success"] ) || intval( $response["Success"] ) !== 1 ) {
+        if ( !isset( $response["ErrorMessage"] ) ) {
+          $this->maybe_log( "Payment for Order #" . $order->get_order_number() ." unsuccesful. Reason: unknown, missing error message.", "error" );
+          $order->update_status( "pending", __( "Payment unsuccesful", "wcwspay" ) );
+
+          if( function_exists( "wc_add_notice" ) ) {
+            wc_add_notice( __( "Payment unsuccesful, reason unknown!", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
+          }
+        } else if ( strtoupper($response["ErrorMessage"]) === "ODBIJENO" ) {
+          $this->maybe_log( "Payment for Order #" . $order->get_order_number() . " denied.", "error" );
           $order->update_status( "pending", __( "Payment denied", "wcwspay" ) );
 
           if( function_exists( "wc_add_notice" ) ) {
             wc_add_notice( __( "Payment for your order is rejected!", "wcwspay" ) . " " . __( "Please contact site administrator.", "wcwspay"), $notice_type = "error" );
           }
         } else {
-          $this->logger->log( "Payment for Order #" . $order->get_order_number() ." unsuccesful. Reason: " . $response["ErrorMessage"], "error" );
-          $order->update_status( "pending", __( "Payment unsuccesful", "wcwspay" ) );
+          $this->maybe_log( "Payment for Order #" . $order->get_order_number() ." unsuccesful. Reason: " . $response["ErrorMessage"], "error" );
+          $order->update_status( "pending", __( "Payment unsuccesful! Reason: " . $response["ErrorMessage"], "wcwspay" ) );
 
           if( function_exists( "wc_add_notice" ) ) {
             wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
@@ -58,7 +69,8 @@ if ( !class_exists( "WC_WSPay" ) ) {
     }
 
     /**
-     * Return testing or production request URL
+     * Return testing or production request URL.
+     *
      * @param boolean $is_testing_mode
      * @return string
      */
@@ -72,6 +84,7 @@ if ( !class_exists( "WC_WSPay" ) ) {
 
     /**
      * Generate and return WSPay params array or return false in case of failure.
+     *
      * @param string $gateway_id: should be something like "neuralab-wcwspay"
      * @param int    $order_id
      * @param string $shop_id
@@ -86,9 +99,9 @@ if ( !class_exists( "WC_WSPay" ) ) {
       $return_url  = $woocommerce->api_request_url( $gateway_id );
       $order_total = $this->process_order_total( $order );
 
-      $signature   = $this->get_signature( $order_id, $order_total, $shop_id, $secret_key );
+      $signature = $this->get_signature( $order_id, $order_total, $shop_id, $secret_key );
       if ( empty($signature) || !is_string($signature) ) {
-        $this->log( "Invalid signature", "error" );
+        $this->maybe_log( "Invalid signature", "error" );
         return false;
       }
 
@@ -123,6 +136,7 @@ if ( !class_exists( "WC_WSPay" ) ) {
      * Generate and return md5 encrypted signature.
      * Signature is generated from the following string:
      * shop_id + secret_key + order_id + secret_key + order_total + secret_key
+     *
      * @param int    $order_id
      * @param string $order_total
      * @param string $shop_id
@@ -134,7 +148,7 @@ if ( !class_exists( "WC_WSPay" ) ) {
       $order_total = str_replace( [",", "."], "", $order_total );
 
       if ( empty($shop_id) || empty($secret_key) || empty($order_id) || empty($order_total) ) {
-        $this->logger->log( "Missing data for generating encrypted signature", "error" );
+        $this->maybe_log( "Missing data for generating encrypted signature", "error" );
         return false;
       }
 
@@ -144,6 +158,8 @@ if ( !class_exists( "WC_WSPay" ) ) {
     /**
      * Compares the given incoming signature with the one generated from the
      * rest of the parameters. Returns true if they match or false otherwise.
+     *
+     * @codeCoverageIgnore
      * @param string $incoming_signature
      * @param int    $order_id
      * @param string $shop_id
@@ -161,17 +177,27 @@ if ( !class_exists( "WC_WSPay" ) ) {
     }
 
     /**
-     * Return order's total amount in right format for WSPay
+     * Return order's total amount in right format for WSPay.
+     *
      * @param WC_Order $order
      * @return string
      */
     private function process_order_total( $order ) {
       $order_total = explode( ".", $order->get_total() );
+      $decimal = !isset( $order_total[1] ) || empty( $order_total[1] ) ? "00" : $order_total[1];
 
-      if( empty( $order_total[1] ) ) {
-        return $order_total[0] . ",00";
-      } else {
-        return $order_total[0] . "," . $order_total[1];
+      return $order_total[0] . "," . $decimal;
+    }
+
+    /**
+     * Create log entry if logger is defined.
+     *
+     * @param  string $message
+     * @param  string $level
+     */
+    private function maybe_log( $message, $level = "info" ) {
+      if ( property_exists($this, 'logger') ) {
+        $this->logger->log( $message, $level );
       }
     }
 

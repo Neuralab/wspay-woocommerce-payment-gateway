@@ -9,6 +9,7 @@ if ( !class_exists( "WC_Payment_Gateway" ) ) {
 
 /**
  * Register payment gateway's class as a new method of payment.
+ *
  * @param array $methods
  * @return array
  */
@@ -27,7 +28,9 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     private $logger = false;
 
     /**
-     * Class constructor with basic gateway's setup
+     * Class constructor with basic gateway's setup.
+     *
+     * @codeCoverageIgnore
      */
     public function __construct() {
       $dir_path = dirname( plugin_dir_path(__FILE__) );
@@ -45,14 +48,16 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       if ( $this->settings["use-mailer"] === "yes" ) {
         $this->logger->enable_mailer( $this->settings["mailer-address"], $this->settings["mailer-min-log-level"] );
       }
-      $this->wspay  = new WC_WSPay($this->logger);
+      $this->wspay = new WC_WSPay($this->logger);
 
       $this->title = esc_attr( $this->settings["title"] );
       $this->add_actions();
     }
 
     /**
-     * Register different actions
+     * Register different actions.
+     *
+     * @codeCoverageIgnore
      */
     private function add_actions() {
       add_action( "woocommerce_update_options_payment_gateways_" . $this->id, array( $this, "process_admin_options" ) );
@@ -64,6 +69,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     /**
      * Define gateway's fields visible at WooCommerce's Settings page and
      * Checkout tab.
+     *
      * @override
      */
     public function init_form_fields() {
@@ -71,7 +77,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Echoes gateway's options (Checkout tab under WooCommerce's settings)
+     * Echoes gateway's options (Checkout tab under WooCommerce's settings).
+     *
      * @override
      */
     public function admin_options() {
@@ -82,7 +89,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Display description of the gateway on the checkout page
+     * Display description of the gateway on the checkout page.
+     *
      * @override
      */
     public function payment_fields() {
@@ -92,7 +100,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Echo confirmation message on the 'thank you' page
+     * Echo confirmation message on the 'thank you' page.
      */
     public function show_confirmation_message() {
       if ( isset($this->settings["confirmation-msg"]) && !empty($this->settings["confirmation-msg"]) ) {
@@ -101,7 +109,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Echo redirect message on the 'receipt' page
+     * Echo redirect message on the 'receipt' page.
      */
     private function show_receipt_message() {
       if ( isset($this->settings["receipt-redirect-msg"]) && !empty($this->settings["receipt-redirect-msg"]) ) {
@@ -110,7 +118,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Trigger actions for 'receipt' page
+     * Trigger actions for 'receipt' page.
+     *
      * @param int $order_id
      */
     public function do_receipt_page( $order_id ) {
@@ -126,12 +135,13 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         $this->settings["shop-id"], $this->settings["secret-key"],
         $this->settings["form-language"]
       );
-
-      $request_url = $this->wspay->get_request_url( $this->settings["use-wspay-sandbox"] === "yes" );
-      if ( empty($request_url) || !is_string($request_url) ) {
-        $this->logger->log( "Missing request URL.", "critical" );
+      if ( empty($wspay_params) || !is_array($wspay_params) ) {
+        $this->logger->log( "Failed generating WsPay form.", "critical" );
         return;
       }
+
+      $request_url = $this->wspay->get_request_url( $this->settings["use-wspay-sandbox"] === "yes" );
+
       echo $this->get_params_form( $request_url, $wspay_params, !$auto_redirect );
       if ( $auto_redirect ) {
         $this->enqueue_redirect_js();
@@ -139,7 +149,7 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Enqueue JavaScript for redirecting to a WSPay form
+     * Enqueue JavaScript for redirecting to a WSPay form.
      */
     private function enqueue_redirect_js() {
       // it's safe to use $ with woocommerce
@@ -150,7 +160,8 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
-     * Convert WSPay parameters to HTML form with inputs representing parameters
+     * Convert WSPay parameters to HTML form with inputs representing parameters.
+     *
      * @param string $request_url
      * @param array  $wspay_params
      * @return string
@@ -173,6 +184,19 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
     }
 
     /**
+     * Redirect to given URL if possible.
+     *
+     * @codeCoverageIgnore
+     * @param string $url
+     */
+    public function call_redirect( $url ) {
+      if ( !headers_sent() ) {
+        wp_safe_redirect( $url );
+        exit;
+      }
+    }
+
+    /**
      * Process response and redirect to a 'thank you' page.
      */
     public function process_wspay_response() {
@@ -182,32 +206,27 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
       $this->logger->log( "Response received from WSPay." );
       // does the response contain min of information
       if ( !isset($response["Success"]) || !isset($response["ShoppingCartID"]) ) {
-        $this->logger->log( "WsPay response for Order #" . $order->get_order_number() . " is invalid.", "error" );
+        $this->logger->log( "WsPay response is invalid.", "error" );
         if( function_exists( "wc_add_notice" ) ) {
           wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
         }
-
-        wp_redirect( wc_get_checkout_url() );
-        exit;
+        return $this->call_redirect( wc_get_checkout_url() );
       }
 
       $success  = intval( $response["Success"] );
       $order_id = intval( $response["ShoppingCartID"] );
-      $order    = new WC_Order( $order_id );
+      $order    = wc_get_order( $order_id );
       // is the provided order ID valid?
       if ( !is_a( $order, "WC_Order" ) ) {
         $this->logger->log( "Order #" . $order_id . " not found", "critical" );
         if( function_exists( "wc_add_notice" ) ) {
           wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
         }
-
-        wp_redirect( wc_get_checkout_url() );
-        exit;
+        return $this->call_redirect( wc_get_checkout_url() );
       }
 
       if ( !$this->wspay->is_response_valid( $response, $order ) ) {
-        wp_redirect( wc_get_checkout_url() );
-        exit;
+        return $this->call_redirect( wc_get_checkout_url() );
       }
 
       if ( !isset($response["ApprovalCode"]) || !isset($response["Signature"]) ) {
@@ -215,13 +234,12 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         if( function_exists( "wc_add_notice" ) ) {
           wc_add_notice( __( "Payment unsuccesful", "wcwspay" ) . "! " . __( "Try again or contact site administrator."), $notice_type = "error" );
         }
-
-        wp_redirect( wc_get_checkout_url() );
-        exit;
+        return $this->call_redirect( wc_get_checkout_url() );
       }
       // last check, validate signature!
       $approval_code = $response["ApprovalCode"];
       $signature     = $response["Signature"];
+
       $is_signature_valid = $this->wspay->is_incoming_signature_valid(
         $signature, $order_id, $this->settings["shop-id"],
         $this->settings["secret-key"], $success, $approval_code
@@ -235,18 +253,17 @@ if ( !class_exists( "WC_WSPay_Payment_Gateway" ) ) {
         wc_reduce_stock_levels( $order->get_id() );
         $woocommerce->cart->empty_cart();
 
-        wp_redirect( $this->get_return_url($order) );
-        exit;
+        return $this->call_redirect( $this->get_return_url($order) );
       } else {
         $this->logger->log( "Signatures mismatch for Order #" . $order->get_order_number() . ".", "critical" );
         $order->add_order_note( __( "Payment was successful but signatures mismatch was detected. Possible illegal activity!", "wcwspay" ) );
-        wp_die( "Possible illegal activity!" );
+        return wp_die( "Possible illegal activity!" );
       }
-
     }
 
     /**
      * Process the payment and return the result.
+     *
      * @override
      * @param string $order_id
      * @return array
