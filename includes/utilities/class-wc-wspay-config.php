@@ -1,10 +1,11 @@
 <?php
 
-if ( !defined( "ABSPATH" ) ) {
+if ( !defined( 'ABSPATH' ) ) {
   exit;
 }
 
-if ( !class_exists( "WC_WSPay_Config" ) ) {
+
+if ( !class_exists( 'WC_WSPay_Config' ) ) {
   class WC_WSPay_Config {
 
     private $data = null;
@@ -22,10 +23,10 @@ if ( !class_exists( "WC_WSPay_Config" ) ) {
      * @param string $file_name
      * @return boolean
      */
-    public function load_from_file( $file_name = "config.json" ) {
+    public function load_from_file( $file_name = 'config.json' ) {
       $current_dir = dirname( plugin_dir_path(__FILE__) );
       try {
-        $this->data = json_decode( file_get_contents( dirname( $current_dir ) . "/" . $file_name ) );
+        $this->data = json_decode( file_get_contents( dirname( $current_dir ) . '/' . $file_name ) );
         return true;
       } catch( Exception $ex ) {
         $this->data = null;
@@ -37,16 +38,15 @@ if ( !class_exists( "WC_WSPay_Config" ) ) {
     /**
      * Returns the value of config field if exists or false if it doesn't.
      * @param string $field_name
-     * @return string|boolean: value of config field or false
+     * @return string|boolean value of config field or false
      */
     public function get( $field_name ) {
-      if ( empty($this->data) && gettype($this->data) !== "object" ) {
+      if ( empty( $this->data ) && gettype( $this->data ) !== 'object' ) {
         return false;
       }
       if ( property_exists( $this->data, $field_name ) ) {
         return $this->data->{ $field_name };
       }
-
       return false;
     }
 

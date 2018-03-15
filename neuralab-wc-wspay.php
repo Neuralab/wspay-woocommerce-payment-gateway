@@ -1,4 +1,4 @@
-<?php
+'<?php
 /**
 * Plugin Name: Neuralab WooCommerce WSPay Payment Gateway
 * Plugin URI: https://github.com/Neuralab/WSPay-WooCommerce-Payment-Gateway
@@ -17,12 +17,12 @@
 * License: MIT
 */
 
-if ( !defined( "ABSPATH" ) ) {
+if ( !defined( 'ABSPATH' ) ) {
   exit;
 }
 
 
-if ( !function_exists( "wcwspay_is_woocommerce_active" ) ) {
+if ( !function_exists( 'wcwspay_is_woocommerce_active' ) ) {
   /**
   * Return true if Woocommerce plugin is active.
   *
@@ -30,14 +30,14 @@ if ( !function_exists( "wcwspay_is_woocommerce_active" ) ) {
   * @return boolean
   */
   function wcwspay_is_woocommerce_active() {
-    if ( in_array( "woocommerce/woocommerce.php", apply_filters( "active_plugins", get_option( "active_plugins" ) ) ) ) {
+    if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
       return true;
     }
     return false;
   }
 }
 
-if ( !function_exists( "wcwspay_admin_notice_missing_woocommerce" ) ) {
+if ( !function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
   /**
   * Echo admin notice HTML for missing WooCommerce plugin.
   *
@@ -45,10 +45,10 @@ if ( !function_exists( "wcwspay_admin_notice_missing_woocommerce" ) ) {
   */
   function wcwspay_admin_notice_missing_woocommerce() {
     global $current_screen;
-    if( $current_screen->parent_base === "plugins" ) {
+    if( $current_screen->parent_base === 'plugins' ) {
       ?>
       <div class="notice notice-error">
-        <p><?php _e( "Please install and activate <a href='http://www.woothemes.com/woocommerce/' target='_blank'>WooCommerce</a> before activating the Neuralab WooCommerce WSPay Payment Gateway!", "wcwspay" ); ?></p>
+        <p><?php _e( 'Please install and activate <a href="http://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a> before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ); ?></p>
       </div>
       <?php
     }
@@ -56,18 +56,18 @@ if ( !function_exists( "wcwspay_admin_notice_missing_woocommerce" ) ) {
 }
 
 if ( !wcwspay_is_woocommerce_active() ) {
-  add_action( "admin_notices", "wcwspay_admin_notice_missing_woocommerce" );
+  add_action( 'admin_notices', 'wcwspay_admin_notice_missing_woocommerce' );
   return;
 }
 
-if ( !class_exists( "WC_WSPay_Main" ) ) {
+if ( !class_exists( 'WC_WSPay_Main' ) ) {
   class WC_WSPay_Main {
     /**
      * Current plugin's version.
      *
      * @var string
      */
-    const VERSION = "0.9.1";
+    const VERSION = '0.9.1';
 
     /**
      * Instance of the current class, null before first usage.
@@ -83,7 +83,7 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      * @since 0.1
      */
     protected function __construct() {
-      require_once( "includes/core/class-wc-wspay-payment-gateway.php" );
+      require_once( 'includes/core/class-wc-wspay-payment-gateway.php' );
     }
 
     /**
@@ -93,7 +93,7 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      * @since 0.1
      */
     public static function install() {
-      if ( !current_user_can( "activate_plugins" ) ) {
+      if ( !current_user_can( 'activate_plugins' ) ) {
         return false;
       }
     }
@@ -105,11 +105,11 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      * @since 0.1
      */
     public static function uninstall() {
-      if ( !current_user_can( "activate_plugins" ) ) {
+      if ( !current_user_can( 'activate_plugins' ) ) {
         return false;
       }
 
-      delete_option( "woocommerce_neuralab-wcwspay_settings" );
+      delete_option( 'woocommerce_neuralab-wcwspay_settings' );
       wp_cache_flush();
     }
 
@@ -135,7 +135,7 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      * @since 0.1
      */
     public function __clone() {
-      return wp_die( "Cloning is forbidden!" );
+      return wp_die( 'Cloning is forbidden!' );
     }
 
     /**
@@ -144,11 +144,11 @@ if ( !class_exists( "WC_WSPay_Main" ) ) {
      * @since 0.1
      */
     public function __wakeup() {
-      return wp_die( "Unserializing instances is forbidden!" );
+      return wp_die( 'Unserializing instances is forbidden!' );
     }
   }
 }
 
-register_activation_hook( __FILE__, array( "WC_WSPay_Main", "install" ) );
-register_uninstall_hook( __FILE__, array( "WC_WSPay_Main", "uninstall" ) );
-add_action( "plugins_loaded", array( "WC_WSPay_Main", "get_instance" ), 0 );
+register_activation_hook( __FILE__, array( 'WC_WSPay_Main', 'install' ) );
+register_uninstall_hook( __FILE__, array( 'WC_WSPay_Main', 'uninstall' ) );
+add_action( 'plugins_loaded', array( 'WC_WSPay_Main', 'get_instance' ), 0 );
