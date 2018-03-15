@@ -1,4 +1,4 @@
-'<?php
+<?php
 /**
 * Plugin Name: Neuralab WooCommerce WSPay Payment Gateway
 * Plugin URI: https://github.com/Neuralab/WSPay-WooCommerce-Payment-Gateway
