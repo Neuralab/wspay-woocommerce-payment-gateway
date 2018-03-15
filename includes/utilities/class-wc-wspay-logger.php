@@ -175,8 +175,8 @@ if ( !class_exists( 'WC_WSPay_Logger' ) ) {
       ' ' . __( 'notice', 'wcwspay' );
 
       $body = ucfirst( $level ) . ' ' . __( 'event was logged at', 'wcwspay' ) .
-      ' ' . date( 'd.m.Y. H:i:s' ) . '.\n';
-      $body .= __( 'Event message', 'wcwspay' ) . ': ' . $message . '\n\n\n';
+      ' ' . date( 'd.m.Y. H:i:s' ) . ".\n";
+      $body .= __( 'Event message', 'wcwspay' ) . ': ' . $message . "\n\n\n";
       $body .= 'Neuralab WooCommerce WSpay Payment Gateway';
 
       return wp_mail( $this->mailer_address, $subject, $body );
