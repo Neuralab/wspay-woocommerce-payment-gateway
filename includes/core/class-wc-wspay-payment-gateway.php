@@ -252,7 +252,6 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
         $order->add_order_note( __( 'Payment completed via WSPay!', 'wcwspay' ) );
         $order->payment_complete();
 
-        wc_reduce_stock_levels( $order->get_id() );
         $woocommerce->cart->empty_cart();
 
         return $this->call_redirect( $this->get_return_url($order) );
