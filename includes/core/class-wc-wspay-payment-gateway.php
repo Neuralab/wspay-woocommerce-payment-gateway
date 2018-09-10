@@ -30,6 +30,18 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
     private $logger = false;
 
     /**
+     * An array where key is the meta's name of the value in WC Order and value
+     * is a sub-array with next structure:
+     * [
+     *  'title'     => string,
+     *  'wspay_key' => string
+     * ]
+     *
+     * @var array
+     */
+    protected $response_fields;
+
+    /**
      * Class constructor with basic gateway's setup.
      *
      * @codeCoverageIgnore
@@ -39,9 +51,35 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
       require_once( 'class-wc-wspay.php' );
       require_once( $dir_path . '/utilities/class-wc-wspay-logger.php' );
 
-      $this->id           = 'neuralab-wcwspay';
-      $this->method_title = __( 'WSPay', 'wcwspay' );
-      $this->has_fields   = true;
+      $this->id              = 'neuralab-wcwspay';
+      $this->method_title    = __( 'WSPay', 'wcwspay' );
+      $this->has_fields      = true;
+      $this->response_fields = array(
+        'wpsay_approval_code' => array(
+          'title'     => __( 'Approval code', 'wcwspay' ),
+          'wspay_key' => 'ApprovalCode',
+        ),
+        'wspay_eci'           => array(
+          'title'     => __( 'Electronic Commerce Indicator', 'wcwspay' ),
+          'wspay_key' => 'ECI',
+        ),
+        'wspay_success'       => array(
+          'title'     => __( 'Success Code', 'wcwspay' ),
+          'wspay_key' => 'Success',
+        ),
+        'wspay_datetime'      => array(
+          'title'     => __( 'Transaction date', 'wcwspay' ),
+          'wspay_key' => 'DateTime',
+        ),
+        'wspay_error_message' => array(
+          'title'     => __( 'Error message', 'wcwspay' ),
+          'wspay_key' => 'ErrorMessage',
+        ),
+        'wspay_order_id'      => array(
+          'title'     => __( 'WsPay\'s order ID', 'wcwspay' ),
+          'wspay_key' => 'WsPayOrderId',
+        ),
+      );
 
       $this->init_form_fields();
       $this->init_settings();
@@ -66,6 +104,38 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
       add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'do_receipt_page' ) );
       add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'show_confirmation_message' ) );
       add_action( 'woocommerce_api_' . $this->id, array( $this, 'process_wspay_response' ) );
+      add_action( 'woocommerce_thankyou', array( $this, 'show_additional_wspay_order_details' ) );
+    }
+
+    public function show_additional_wspay_order_details( $order_id ) {
+      if ( !apply_filters( 'show_order_wspay_details', false ) ) {
+        return;
+      }
+
+      $order = wc_get_order( $order_id );
+      if ( !$order || !is_a( $order, 'WC_Order' ) ) {
+        return;
+      }
+      ?>
+      <section class="wspay-order-details">
+        <h2 class="woocommerce-column__title wspay-order-details__title">
+          <?php _e( 'WSpay Order details', 'wcwspay' ); ?>
+        </h2>
+        <ul class="order_details">
+          <?php foreach( $this->response_fields as $key => $data ): ?>
+            <?php if ( apply_filters( 'show_order_detail_' . $key, true ) ): ?>
+              <?php $value = apply_filters( $key . '_order_details_value', $order->get_meta( $key, true ) ); ?>
+              <?php if ( $value !== '' ): ?>
+                <li class="wspay-order-details__item <?php esc_attr_e( $key ); ?>">
+                  <?php echo apply_filters( $key . '_order_details_label', $data['title'] ); ?>:
+                  <strong><?php echo $value; ?></strong>
+                </li>
+              <?php endif; ?>
+            <?php endif; ?>
+          <?php endforeach; ?>
+        </ul>
+      </section>
+      <?php
     }
 
     /**
@@ -253,13 +323,36 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
         $order->payment_complete();
 
         $woocommerce->cart->empty_cart();
+        $this->save_response_to_order( $response, $order );
 
-        return $this->call_redirect( $this->get_return_url($order) );
+        return $this->call_redirect( $this->get_return_url( $order ) );
       } else {
         $this->logger->log( 'Signatures mismatch for Order #' . $order->get_order_number() . '.', 'critical' );
         $order->add_order_note( __( 'Payment was successful but signatures mismatch was detected. Possible illegal activity!', 'wcwspay' ) );
         return wp_die( 'Possible illegal activity!' );
       }
+    }
+
+    /**
+     * Extract various fields from the given response and save them as order meta.
+     *
+     * @param array    $response
+     * @param WC_Order $order
+     */
+    private function save_response_to_order( $response, $order ) {
+      $empty_check = array( 'DateTime', 'ErrorMessage', 'WsPayOrderId' );
+      foreach ( $this->response_fields as $wc_key => $data ) {
+        if ( isset( $response[ $data['wspay_key'] ] ) ) {
+          if ( in_array( $data['wspay_key'], $empty_check ) ) {
+            if ( !empty( $response[ $data['wspay_key'] ] ) ) {
+              $order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
+            }
+          } else if ( $response[ $data['wspay_key'] ] !== '' ) {
+            $order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
+          }
+        }
+      }
+      $order->save();
     }
 
     /**
