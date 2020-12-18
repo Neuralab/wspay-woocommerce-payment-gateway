@@ -227,7 +227,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
       // it's safe to use $ with woocommerce
       // if there's no redirect after 10 seconds, unblock the UI
       wc_enqueue_js("$('.card').block({message: null, overlayCSS: { background: '#fff', opacity: 0.6 }});");
-      wc_enqueue_js("setTimeout(function(){ $('.card').unblock(); }, 10000)");
+      wc_enqueue_js("setTimeout(function(){ $('.card').unblock(); }, 10000);");
       wc_enqueue_js("$('#wcwspay-form').submit();");
     }
 
