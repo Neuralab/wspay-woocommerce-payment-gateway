@@ -3,7 +3,7 @@
 * Plugin Name: Neuralab WooCommerce WSPay Payment Gateway
 * Plugin URI: https://github.com/Neuralab/WSPay-WooCommerce-Payment-Gateway
 * Description: WooCommerce WSPay Payment Gateway
-* Version: 0.9.2
+* Version: 0.9.3
 * Author: Neuralab
 * Author URI: https://neuralab.net
 * Developer: Matej
@@ -67,7 +67,7 @@ if ( !class_exists( 'WC_WSPay_Main' ) ) {
      *
      * @var string
      */
-    const VERSION = '0.9.2';
+    const VERSION = '0.9.3';
 
     /**
      * Instance of the current class, null before first usage.
