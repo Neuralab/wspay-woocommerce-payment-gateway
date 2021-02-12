@@ -147,7 +147,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @override
 		 */
 		public function init_form_fields() {
-			$this->form_fields = include( 'wc-wspay-settings.php' );
+			$this->form_fields = include 'wc-wspay-settings.php';
 		}
 
 		/**
