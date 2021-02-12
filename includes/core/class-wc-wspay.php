@@ -22,8 +22,8 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 		 */
 		public function __construct( $logger = null ) {
 			$dir_path = dirname( plugin_dir_path( __FILE__ ) );
-			require_once( $dir_path . '/utilities/class-wc-wspay-config.php' );
-			require_once( $dir_path . '/utilities/class-wc-wspay-logger.php' );
+			require_once $dir_path . '/utilities/class-wc-wspay-config.php';
+			require_once $dir_path . '/utilities/class-wc-wspay-logger.php';
 
 			$this->config = new WC_WSPay_Config();
 			if ( is_a( $logger, 'WC_WSPay_Logger' ) ) {

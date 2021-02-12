@@ -50,8 +50,8 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		public function __construct() {
 			$dir_path = dirname( plugin_dir_path( __FILE__ ) );
-			require_once( 'class-wc-wspay.php' );
-			require_once( $dir_path . '/utilities/class-wc-wspay-logger.php' );
+			require_once 'class-wc-wspay.php';
+			require_once $dir_path . '/utilities/class-wc-wspay-logger.php';
 
 			$this->id              = 'neuralab-wcwspay';
 			$this->method_title    = __( 'WSPay', 'wcwspay' );
