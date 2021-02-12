@@ -20,6 +20,7 @@ if ( ! class_exists( 'WC_WSPay_Config' ) ) {
 		/**
 		 * Loads data from file which should be JSON text file in root directory.
 		 * Returns true if file is successfully loaded.
+		 *
 		 * @param string $file_name
 		 * @return boolean
 		 */
@@ -37,6 +38,7 @@ if ( ! class_exists( 'WC_WSPay_Config' ) ) {
 
 		/**
 		 * Returns the value of config field if exists or false if it doesn't.
+		 *
 		 * @param string $field_name
 		 * @return string|boolean value of config field or false
 		 */

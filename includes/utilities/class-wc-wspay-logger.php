@@ -64,6 +64,7 @@ if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 
 		/**
 		 * Init logger.
+		 *
 		 * @codeCoverageIgnore
 		 * @param boolean $is_log_enabled   defaults to false
 		 */
