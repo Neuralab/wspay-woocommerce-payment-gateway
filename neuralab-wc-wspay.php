@@ -74,7 +74,7 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		 *
 		 * @var WC_WSPay_Main
 		 */
-		protected static $_instance = null;
+		protected static $instance = null;
 
 		/**
 		 * Class constructor.
@@ -122,11 +122,11 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		 */
 		public static function get_instance() {
 			// @codeCoverageIgnoreStart
-			if ( is_null( self::$_instance ) ) {
-				self::$_instance = new self;
+			if ( is_null( self::$instance ) ) {
+				self::$instance = new self;
 			}
 			// @codeCoverageIgnoreEnd
-			return self::$_instance;
+			return self::$instance;
 		}
 
 		/**
