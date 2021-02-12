@@ -108,13 +108,13 @@ return [
 		'default'     => 'no',
 		'description' => __( 'Sends log messages to defined e-mail address for defined minimum log level.', 'wcwspay' ),
 	],
-	'mailer-address' => array(
+	'mailer-address' => [
 		'type'        => 'text',
 		'label'       => __( 'Mailer address', 'wcwspay' ),
 		'default'     => get_bloginfo( 'admin_email' ),
 		'desc_tip'    => true,
 		'description' => __( 'Mailer\'s address. Defaults to admin email (set in Settings > General).', 'wcwspay' ),
-	),
+	],
 	'mailer-min-log-level' => [
 		'type'        => 'select',
 		'label'       => __( 'Mailer minimum log level', 'wcwspay' ),
