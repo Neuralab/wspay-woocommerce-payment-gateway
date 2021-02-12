@@ -121,16 +121,16 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			?>
 			<section class="wspay-order-details">
 				<h2 class="woocommerce-column__title wspay-order-details__title">
-					<?php _e( 'WSpay Order details', 'wcwspay' ); ?>
+					<?php esc_html_e( 'WSpay Order details', 'wcwspay' ); ?>
 				</h2>
 				<ul class="order_details">
 					<?php foreach ( $this->response_fields as $key => $data ) : ?>
 						<?php if ( apply_filters( 'show_order_detail_' . $key, true ) ) : ?>
 							<?php $value = apply_filters( $key . '_order_details_value', $order->get_meta( $key, true ) ); ?>
 							<?php if ( $value !== '' ) : ?>
-								<li class="wspay-order-details__item <?php esc_attr_e( $key ); ?>">
-									<?php echo apply_filters( $key . '_order_details_label', $data['title'] ); ?>:
-									<strong><?php echo $value; ?></strong>
+								<li class="wspay-order-details__item <?php echo esc_attr( $key ); ?>">
+									<?php echo esc_html( apply_filters( $key . '_order_details_label', $data['title'] ) ); ?>:
+									<strong><?php echo esc_html( $value ); ?></strong>
 								</li>
 							<?php endif; ?>
 						<?php endif; ?>
@@ -156,7 +156,9 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @override
 		 */
 		public function admin_options() {
-			echo '<h2>' . __( 'Neuralab\'s WSPay Payment Gateway', 'wcwspay' ) . '</h2>';
+			echo '<h2>';
+			esc_html_e( 'Neuralab\'s WSPay Payment Gateway', 'wcwspay' );
+			echo '</h2>';
 			echo '<table class="form-table">';
 			$this->generate_settings_html();
 			echo '</table>';
@@ -169,7 +171,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		public function payment_fields() {
 			if ( isset( $this->settings['description-msg'] ) && ! empty( $this->settings['description-msg'] ) ) {
-				echo wptexturize( $this->settings['description-msg'] );
+				echo esc_html( wptexturize( $this->settings['description-msg'] ) );
 			}
 		}
 
@@ -178,7 +180,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		public function show_confirmation_message() {
 			if ( isset( $this->settings['confirmation-msg'] ) && ! empty( $this->settings['confirmation-msg'] ) ) {
-				echo '<p>' . wptexturize( $this->settings['confirmation-msg'] ) . '</p>';
+				echo '<p>' . esc_html( wptexturize( $this->settings['confirmation-msg'] ) ) . '</p>';
 			}
 		}
 
@@ -187,7 +189,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		private function show_receipt_message() {
 			if ( isset( $this->settings['receipt-redirect-msg'] ) && ! empty( $this->settings['receipt-redirect-msg'] ) ) {
-				echo '<p>' . wptexturize( $this->settings['receipt-redirect-msg'] ) . '</p>';
+				echo '<p>' . esc_html( wptexturize( $this->settings['receipt-redirect-msg'] ) ) . '</p>';
 			}
 		}
 

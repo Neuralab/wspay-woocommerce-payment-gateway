@@ -48,7 +48,12 @@ if ( ! function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
 		if ( $current_screen->parent_base === 'plugins' ) {
 			?>
 			<div class="notice notice-error">
-				<p><?php _e( 'Please install and activate <a href="http://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a> before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ); ?></p>
+				<p>
+					<?php
+						/* translators: %s: link to WooCommerce */
+						echo sprintf( esc_html__( 'Please install and activate %s before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ), '<a href="http://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a>' );
+					?>
+				</p>
 			</div>
 			<?php
 		}
