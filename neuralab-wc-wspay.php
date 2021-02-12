@@ -88,7 +88,7 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		 * @since 0.1
 		 */
 		protected function __construct() {
-			require_once( 'includes/core/class-wc-wspay-payment-gateway.php' );
+			require_once 'includes/core/class-wc-wspay-payment-gateway.php';
 		}
 
 		/**
