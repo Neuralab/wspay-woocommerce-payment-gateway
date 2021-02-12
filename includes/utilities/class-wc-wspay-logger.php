@@ -21,7 +21,14 @@ if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 		 * @var array
 		 */
 		public $log_levels = [
-			'emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug'
+			'emergency',
+			'alert',
+			'critical',
+			'error',
+			'warning',
+			'notice',
+			'info',
+			'debug'
 		];
 
 		/**
