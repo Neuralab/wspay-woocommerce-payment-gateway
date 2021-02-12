@@ -25,6 +25,8 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 	class WC_WSPay_Payment_Gateway extends WC_Payment_Gateway {
 
 		/**
+		 * WC_WSPay_Logger instance
+		 *
 		 * @var WC_WSPay_Logger
 		 */
 		private $logger = false;
