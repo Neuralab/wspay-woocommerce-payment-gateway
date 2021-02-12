@@ -99,6 +99,7 @@ return [
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable logging', 'wcwspay' ),
 		'default'     => 'no',
+		/* translators: %s: path to log file */
 		'description' => sprintf( __( 'Log gateway events, stored in %s', 'wcwspay' ), '<code>' . WC_Log_Handler_File::get_log_file_path( 'wcwspay' ) . '</code>' ),
 	],
 	'use-mailer'           => [
