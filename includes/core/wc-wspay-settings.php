@@ -6,28 +6,28 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 return [
-	'enabled' => [
-		'title'     => __( 'Enable', 'wcwspay' ),
-		'type'      => 'checkbox',
-		'label'     => __( 'Enable WSPay Payment Gateway', 'wcwspay' ),
-		'default'   => 'no',
-		'desc_tip'  => false,
+	'enabled'              => [
+		'title'    => __( 'Enable', 'wcwspay' ),
+		'type'     => 'checkbox',
+		'label'    => __( 'Enable WSPay Payment Gateway', 'wcwspay' ),
+		'default'  => 'no',
+		'desc_tip' => false,
 	],
-	'title' => [
+	'title'                => [
 		'title'       => __( 'Title', 'wcwspay' ),
 		'type'        => 'text',
 		'description' => __( 'This controls the title which the user sees during the checkout.', 'wcwspay' ),
 		'default'     => __( 'WSPay', 'wcwspay' ),
 		'desc_tip'    => true,
 	],
-	'description-msg' => [
+	'description-msg'      => [
 		'title'       => __( 'Description', 'wcwspay' ),
 		'type'        => 'textarea',
 		'description' => __( 'Payment method description that the customer will see on your checkout.', 'wcwspay' ),
 		'default'     => '',
 		'desc_tip'    => true,
 	],
-	'confirmation-msg' => [
+	'confirmation-msg'     => [
 		'title'       => __( 'Confirmation', 'wcwspay' ),
 		'type'        => 'textarea',
 		'description' => __( 'Confirmation message that will be added to the "thank you" page.', 'wcwspay' ),
@@ -41,44 +41,44 @@ return [
 		'default'     => __( 'Please click on the button below.', 'wcwspay' ),
 		'desc_tip'    => true,
 	],
-	'shop-id' => [
+	'shop-id'              => [
 		'title'       => __( 'Shop ID', 'wcwspay' ),
 		'type'        => 'text',
 		'description' => __( 'Web shop\'s unique identification string.', 'wcwspay' ),
 		'default'     => '',
 		'desc_tip'    => true,
 	],
-	'secret-key' => [
+	'secret-key'           => [
 		'title'       => __( 'Secret Key', 'wcwspay' ),
 		'type'        => 'password',
 		'description' => __( 'Secret key for signing orders.', 'wcwspay' ),
 		'default'     => '',
 		'desc_tip'    => true,
 	],
-	'form-language' => [
+	'form-language'        => [
 		'title'       => __( 'Form Language', 'wcwspay' ),
 		'type'        => 'select',
 		'description' => __( 'Language of the WSPay form.', 'wcwspay' ),
 		'default'     => 'EN',
 		'desc_tip'    => true,
 		'options'     => [
-			'HR'  => __( 'Croatian', 'wcwspay' ),
-			'CZ'  => __( 'Czech', 'wcwspay' ),
-			'NL'  => __( 'Dutch', 'wcwspay' ),
-			'EN'  => __( 'English', 'wcwspay' ),
-			'FR'  => __( 'French', 'wcwspay' ),
-			'DE'  => __( 'German', 'wcwspay' ),
-			'HU'  => __( 'Hungarian', 'wcwspay' ),
-			'IT'  => __( 'Italian', 'wcwspay' ),
-			'PL'  => __( 'Polish', 'wcwspay' ),
-			'PT'  => __( 'Portuguese', 'wcwspay' ),
-			'RU'  => __( 'Russian', 'wcwspay' ),
-			'SK'  => __( 'Slovak', 'wcwspay' ),
-			'SL'  => __( 'Slovenian', 'wcwspay' ),
-			'ES'  => __( 'Spanish', 'wcwspay' ),
+			'HR' => __( 'Croatian', 'wcwspay' ),
+			'CZ' => __( 'Czech', 'wcwspay' ),
+			'NL' => __( 'Dutch', 'wcwspay' ),
+			'EN' => __( 'English', 'wcwspay' ),
+			'FR' => __( 'French', 'wcwspay' ),
+			'DE' => __( 'German', 'wcwspay' ),
+			'HU' => __( 'Hungarian', 'wcwspay' ),
+			'IT' => __( 'Italian', 'wcwspay' ),
+			'PL' => __( 'Polish', 'wcwspay' ),
+			'PT' => __( 'Portuguese', 'wcwspay' ),
+			'RU' => __( 'Russian', 'wcwspay' ),
+			'SK' => __( 'Slovak', 'wcwspay' ),
+			'SL' => __( 'Slovenian', 'wcwspay' ),
+			'ES' => __( 'Spanish', 'wcwspay' ),
 		],
 	],
-	'auto-redirect' => [
+	'auto-redirect'        => [
 		'title'       => __( 'Automatic redirect', 'wcwspay' ),
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable automatic redirect to the WSPay Form.', 'wcwspay' ),
@@ -86,7 +86,7 @@ return [
 		'default'     => 'yes',
 		'desc_tip'    => true,
 	],
-	'use-wspay-sandbox' => [
+	'use-wspay-sandbox'    => [
 		'title'       => __( 'WSPay Sandbox', 'wcwspay' ),
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable WSPay Sandbox.', 'wcwspay' ),
@@ -94,21 +94,21 @@ return [
 		'default'     => 'no',
 		'desc_tip'    => true,
 	],
-	'use-logger' => [
+	'use-logger'           => [
 		'title'       => __( 'Debug log', 'wcwspay' ),
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable logging', 'wcwspay' ),
 		'default'     => 'no',
 		'description' => sprintf( __( 'Log gateway events, stored in %s', 'wcwspay' ), '<code>' . WC_Log_Handler_File::get_log_file_path( 'wcwspay' ) . '</code>' ),
 	],
-	'use-mailer' => [
+	'use-mailer'           => [
 		'title'       => __( 'Log mailer', 'wcwspay' ),
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable log mailer', 'wcwspay' ),
 		'default'     => 'no',
 		'description' => __( 'Sends log messages to defined e-mail address for defined minimum log level.', 'wcwspay' ),
 	],
-	'mailer-address' => [
+	'mailer-address'       => [
 		'type'        => 'text',
 		'label'       => __( 'Mailer address', 'wcwspay' ),
 		'default'     => get_bloginfo( 'admin_email' ),
