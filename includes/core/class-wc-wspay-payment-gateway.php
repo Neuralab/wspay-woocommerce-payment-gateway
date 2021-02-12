@@ -343,7 +343,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$empty_check = [ 'DateTime', 'ErrorMessage', 'WsPayOrderId' ];
 			foreach ( $this->response_fields as $wc_key => $data ) {
 				if ( isset( $response[ $data['wspay_key'] ] ) ) {
-					if ( in_array( $data['wspay_key'], $empty_check ) ) {
+					if ( in_array( $data['wspay_key'], $empty_check, true ) ) {
 						if ( ! empty( $response[ $data['wspay_key'] ] ) ) {
 							$order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
 						}

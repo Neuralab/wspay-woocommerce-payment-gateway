@@ -136,7 +136,7 @@ if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 				}
 
 				// check if provided level is valid!
-				if ( ! in_array( $level, $this->log_levels ) ) {
+				if ( ! in_array( $level, $this->log_levels, true ) ) {
 					$this->log( 'Invalid log level provided: ' . $level, 'debug' );
 					$level = 'notice';
 				}
