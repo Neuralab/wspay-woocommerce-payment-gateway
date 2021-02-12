@@ -122,7 +122,7 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 				'CustomerZIP'       => $order->get_billing_postcode(),
 				'CustomerCountry'   => $order->get_billing_country(),
 				'CustomerEmail'     => $order->get_billing_email(),
-				'CustomerPhone'     => $order->get_billing_phone()
+				'CustomerPhone'     => $order->get_billing_phone(),
 			];
 
 			if ( ! empty( $order->get_billing_address_2() ) ) {

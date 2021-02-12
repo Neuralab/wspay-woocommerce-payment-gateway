@@ -368,7 +368,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$order = new WC_Order( $order_id );
 			return [
 				'result'   => 'success',
-				'redirect' => $order->get_checkout_payment_url( true )
+				'redirect' => $order->get_checkout_payment_url( true ),
 			];
 		}
 

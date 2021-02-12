@@ -28,7 +28,7 @@ if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 			'warning',
 			'notice',
 			'info',
-			'debug'
+			'debug',
 		];
 
 		/**

@@ -11,49 +11,49 @@ return [
 		'type'      => 'checkbox',
 		'label'     => __( 'Enable WSPay Payment Gateway', 'wcwspay' ),
 		'default'   => 'no',
-		'desc_tip'  => false
+		'desc_tip'  => false,
 	],
 	'title' => [
 		'title'       => __( 'Title', 'wcwspay' ),
 		'type'        => 'text',
 		'description' => __( 'This controls the title which the user sees during the checkout.', 'wcwspay' ),
 		'default'     => __( 'WSPay', 'wcwspay' ),
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'description-msg' => [
 		'title'       => __( 'Description', 'wcwspay' ),
 		'type'        => 'textarea',
 		'description' => __( 'Payment method description that the customer will see on your checkout.', 'wcwspay' ),
 		'default'     => '',
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'confirmation-msg' => [
 		'title'       => __( 'Confirmation', 'wcwspay' ),
 		'type'        => 'textarea',
 		'description' => __( 'Confirmation message that will be added to the "thank you" page.', 'wcwspay' ),
 		'default'     => __( 'Your account has been charged and your transaction is successful.', 'wcwspay' ),
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'receipt-redirect-msg' => [
 		'title'       => __( 'Receipt', 'wcwspay' ),
 		'type'        => 'textarea',
 		'description' => __( 'Message that will be added to the "receipt" page. Shown if automatic redirect is enabled.', 'wcwspay' ),
 		'default'     => __( 'Please click on the button below.', 'wcwspay' ),
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'shop-id' => [
 		'title'       => __( 'Shop ID', 'wcwspay' ),
 		'type'        => 'text',
 		'description' => __( 'Web shop\'s unique identification string.', 'wcwspay' ),
 		'default'     => '',
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'secret-key' => [
 		'title'       => __( 'Secret Key', 'wcwspay' ),
 		'type'        => 'password',
 		'description' => __( 'Secret key for signing orders.', 'wcwspay' ),
 		'default'     => '',
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'form-language' => [
 		'title'       => __( 'Form Language', 'wcwspay' ),
@@ -76,7 +76,7 @@ return [
 			'SK'  => __( 'Slovak', 'wcwspay' ),
 			'SL'  => __( 'Slovenian', 'wcwspay' ),
 			'ES'  => __( 'Spanish', 'wcwspay' ),
-		]
+		],
 	],
 	'auto-redirect' => [
 		'title'       => __( 'Automatic redirect', 'wcwspay' ),
@@ -84,7 +84,7 @@ return [
 		'label'       => __( 'Enable automatic redirect to the WSPay Form.', 'wcwspay' ),
 		'description' => __( 'This option is using JavaScript (Ajax).', 'wcwspay' ),
 		'default'     => 'yes',
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'use-wspay-sandbox' => [
 		'title'       => __( 'WSPay Sandbox', 'wcwspay' ),
@@ -92,14 +92,14 @@ return [
 		'label'       => __( 'Enable WSPay Sandbox.', 'wcwspay' ),
 		'description' => __( 'Sandbox is used for testing purposes, disable this for live web shops.', 'wcwspay' ),
 		'default'     => 'no',
-		'desc_tip'    => true
+		'desc_tip'    => true,
 	],
 	'use-logger' => [
 		'title'       => __( 'Debug log', 'wcwspay' ),
 		'type'        => 'checkbox',
 		'label'       => __( 'Enable logging', 'wcwspay' ),
 		'default'     => 'no',
-		'description' => sprintf( __( 'Log gateway events, stored in %s', 'wcwspay' ), '<code>' . WC_Log_Handler_File::get_log_file_path( 'wcwspay' ) . '</code>' )
+		'description' => sprintf( __( 'Log gateway events, stored in %s', 'wcwspay' ), '<code>' . WC_Log_Handler_File::get_log_file_path( 'wcwspay' ) . '</code>' ),
 	],
 	'use-mailer' => [
 		'title'       => __( 'Log mailer', 'wcwspay' ),
@@ -130,6 +130,6 @@ return [
 			'notice'    => __( 'Notice', 'wcwspay' ),
 			'info'      => __( 'Info', 'wcwspay' ),
 			'debug'     => __( 'Debug', 'wcwspay' ),
-		]
+		],
 	],
 ];
