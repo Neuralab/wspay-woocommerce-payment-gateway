@@ -145,7 +145,7 @@ if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 					$this->send_mail( $level, $message );
 				}
 
-				$this->logger->log( $level, $message, array( 'source' => 'wcwspay' ) );
+				$this->logger->log( $level, $message, [ 'source' => 'wcwspay' ] );
 				return true;
 			}
 

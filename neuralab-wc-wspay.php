@@ -149,6 +149,6 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 	}
 }
 
-register_activation_hook( __FILE__, array( 'WC_WSPay_Main', 'install' ) );
-register_uninstall_hook( __FILE__, array( 'WC_WSPay_Main', 'uninstall' ) );
-add_action( 'plugins_loaded', array( 'WC_WSPay_Main', 'get_instance' ), 0 );
+register_activation_hook( __FILE__, [ 'WC_WSPay_Main', 'install' ] );
+register_uninstall_hook( __FILE__, [ 'WC_WSPay_Main', 'uninstall' ] );
+add_action( 'plugins_loaded', [ 'WC_WSPay_Main', 'get_instance' ], 0 );

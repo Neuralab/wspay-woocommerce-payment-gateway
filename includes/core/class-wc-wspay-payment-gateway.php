@@ -54,32 +54,32 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$this->id              = 'neuralab-wcwspay';
 			$this->method_title    = __( 'WSPay', 'wcwspay' );
 			$this->has_fields      = true;
-			$this->response_fields = array(
-				'wpsay_approval_code' => array(
+			$this->response_fields = [
+				'wpsay_approval_code' => [
 					'title'     => __( 'Approval code', 'wcwspay' ),
 					'wspay_key' => 'ApprovalCode',
-				),
-				'wspay_eci'           => array(
+				],
+				'wspay_eci'           => [
 					'title'     => __( 'Electronic Commerce Indicator', 'wcwspay' ),
 					'wspay_key' => 'ECI',
-				),
-				'wspay_success'       => array(
+				],
+				'wspay_success'       => [
 					'title'     => __( 'Success Code', 'wcwspay' ),
 					'wspay_key' => 'Success',
-				),
-				'wspay_datetime'      => array(
+				],
+				'wspay_datetime'      => [
 					'title'     => __( 'Transaction date', 'wcwspay' ),
 					'wspay_key' => 'DateTime',
-				),
-				'wspay_error_message' => array(
+				],
+				'wspay_error_message' => [
 					'title'     => __( 'Error message', 'wcwspay' ),
 					'wspay_key' => 'ErrorMessage',
-				),
-				'wspay_order_id'      => array(
+				],
+				'wspay_order_id'      => [
 					'title'     => __( 'WsPay\'s order ID', 'wcwspay' ),
 					'wspay_key' => 'WsPayOrderId',
-				),
-			);
+				],
+			];
 
 			$this->init_form_fields();
 			$this->init_settings();
@@ -100,11 +100,11 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @codeCoverageIgnore
 		 */
 		private function add_actions() {
-			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-			add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'do_receipt_page' ) );
-			add_action( 'woocommerce_thankyou_' . $this->id, array( $this, 'show_confirmation_message' ) );
-			add_action( 'woocommerce_api_' . $this->id, array( $this, 'process_wspay_response' ) );
-			add_action( 'woocommerce_thankyou', array( $this, 'show_additional_wspay_order_details' ) );
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, [ $this, 'process_admin_options' ] );
+			add_action( 'woocommerce_receipt_' . $this->id, [ $this, 'do_receipt_page' ] );
+			add_action( 'woocommerce_thankyou_' . $this->id, [ $this, 'show_confirmation_message' ] );
+			add_action( 'woocommerce_api_' . $this->id, [ $this, 'process_wspay_response' ] );
+			add_action( 'woocommerce_thankyou', [ $this, 'show_additional_wspay_order_details' ] );
 		}
 
 		public function show_additional_wspay_order_details( $order_id ) {
@@ -340,7 +340,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @param WC_Order $order
 		 */
 		private function save_response_to_order( $response, $order ) {
-			$empty_check = array( 'DateTime', 'ErrorMessage', 'WsPayOrderId' );
+			$empty_check = [ 'DateTime', 'ErrorMessage', 'WsPayOrderId' ];
 			foreach ( $this->response_fields as $wc_key => $data ) {
 				if ( isset( $response[ $data['wspay_key'] ] ) ) {
 					if ( in_array( $data['wspay_key'], $empty_check ) ) {
@@ -364,10 +364,10 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		public function process_payment( $order_id ) {
 			$order = new WC_Order( $order_id );
-			return array(
+			return [
 				'result'   => 'success',
 				'redirect' => $order->get_checkout_payment_url( true )
-			);
+			];
 		}
 
 	}

@@ -105,7 +105,7 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 				return false;
 			}
 
-			$wspay_params = array(
+			$wspay_params = [
 				'ShopID'            => $shop_id,
 				'ShoppingCartID'    => $order_id,
 				'TotalAmount'       => $order_total,
@@ -123,7 +123,7 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 				'CustomerCountry'   => $order->get_billing_country(),
 				'CustomerEmail'     => $order->get_billing_email(),
 				'CustomerPhone'     => $order->get_billing_phone()
-			);
+			];
 
 			if ( ! empty( $order->get_billing_address_2() ) ) {
 				$wspay_params['CustomerAddress'] .= ', ' . $order->get_billing_address_2();
