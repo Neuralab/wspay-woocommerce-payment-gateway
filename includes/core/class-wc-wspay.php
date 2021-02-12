@@ -48,7 +48,7 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 					if ( function_exists( 'wc_add_notice' ) ) {
 						wc_add_notice( __( 'Payment unsuccesful, reason unknown!', 'wcwspay' ) . '! ' . __( 'Try again or contact site administrator.' ), $notice_type = 'error' );
 					}
-				} else if ( strtoupper( $response['ErrorMessage'] ) === 'ODBIJENO' ) {
+				} elseif ( strtoupper( $response['ErrorMessage'] ) === 'ODBIJENO' ) {
 					$this->maybe_log( 'Payment for Order #' . $order->get_order_number() . ' denied.', 'error' );
 					$order->update_status( 'pending', __( 'Payment denied', 'wcwspay' ) );
 

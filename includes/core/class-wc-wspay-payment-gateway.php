@@ -347,7 +347,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 						if ( ! empty( $response[ $data['wspay_key'] ] ) ) {
 							$order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
 						}
-					} else if ( $response[ $data['wspay_key'] ] !== '' ) {
+					} elseif ( $response[ $data['wspay_key'] ] !== '' ) {
 						$order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
 					}
 				}
