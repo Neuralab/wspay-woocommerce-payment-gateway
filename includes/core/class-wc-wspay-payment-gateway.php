@@ -205,8 +205,11 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 				$this->logger->log( 'Redirecting user\'s Order #' . $order_id . ' to WsPay form.' );
 			}
 
-			$wspay_params = $this->wspay->get_wspay_params( $this->id, $order_id,
-				$this->settings['shop-id'], $this->settings['secret-key'],
+			$wspay_params = $this->wspay->get_wspay_params(
+				$this->id,
+				$order_id,
+				$this->settings['shop-id'],
+				$this->settings['secret-key'],
 				$this->settings['form-language']
 			);
 			if ( empty( $wspay_params ) || ! is_array( $wspay_params ) ) {
@@ -315,8 +318,12 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$signature     = $response['Signature'];
 
 			$is_signature_valid = $this->wspay->is_incoming_signature_valid(
-				$signature, $order_id, $this->settings['shop-id'],
-				$this->settings['secret-key'], $success, $approval_code
+				$signature,
+				$order_id,
+				$this->settings['shop-id'],
+				$this->settings['secret-key'],
+				$success,
+				$approval_code
 			);
 
 			if ( $is_signature_valid ) {
