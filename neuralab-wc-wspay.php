@@ -123,7 +123,7 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		public static function get_instance() {
 			// @codeCoverageIgnoreStart
 			if ( is_null( self::$instance ) ) {
-				self::$instance = new self;
+				self::$instance = new self();
 			}
 			// @codeCoverageIgnoreEnd
 			return self::$instance;
