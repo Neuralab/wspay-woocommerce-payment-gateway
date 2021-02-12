@@ -17,18 +17,18 @@
  * License: MIT
  */
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 
-if ( !function_exists( 'wcwspay_is_woocommerce_active' ) ) {
+if ( ! function_exists( 'wcwspay_is_woocommerce_active' ) ) {
 	/**
-	* Return true if Woocommerce plugin is active.
-	*
-	* @since 0.1
-	* @return boolean
-	*/
+	 * Return true if Woocommerce plugin is active.
+	 *
+	 * @since 0.1
+	 * @return boolean
+	 */
 	function wcwspay_is_woocommerce_active() {
 		if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 			return true;
@@ -37,15 +37,15 @@ if ( !function_exists( 'wcwspay_is_woocommerce_active' ) ) {
 	}
 }
 
-if ( !function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
+if ( ! function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
 	/**
-	* Echo admin notice HTML for missing WooCommerce plugin.
-	*
-	* @since 0.1
-	*/
+	 * Echo admin notice HTML for missing WooCommerce plugin.
+	 *
+	 * @since 0.1
+	 */
 	function wcwspay_admin_notice_missing_woocommerce() {
 		global $current_screen;
-		if( $current_screen->parent_base === 'plugins' ) {
+		if ( $current_screen->parent_base === 'plugins' ) {
 			?>
 			<div class="notice notice-error">
 				<p><?php _e( 'Please install and activate <a href="http://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a> before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ); ?></p>
@@ -55,12 +55,12 @@ if ( !function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
 	}
 }
 
-if ( !wcwspay_is_woocommerce_active() ) {
+if ( ! wcwspay_is_woocommerce_active() ) {
 	add_action( 'admin_notices', 'wcwspay_admin_notice_missing_woocommerce' );
 	return;
 }
 
-if ( !class_exists( 'WC_WSPay_Main' ) ) {
+if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 	class WC_WSPay_Main {
 		/**
 		 * Current plugin's version.
@@ -93,7 +93,7 @@ if ( !class_exists( 'WC_WSPay_Main' ) ) {
 		 * @since 0.1
 		 */
 		public static function install() {
-			if ( !current_user_can( 'activate_plugins' ) ) {
+			if ( ! current_user_can( 'activate_plugins' ) ) {
 				return false;
 			}
 		}
@@ -105,7 +105,7 @@ if ( !class_exists( 'WC_WSPay_Main' ) ) {
 		 * @since 0.1
 		 */
 		public static function uninstall() {
-			if ( !current_user_can( 'activate_plugins' ) ) {
+			if ( ! current_user_can( 'activate_plugins' ) ) {
 				return false;
 			}
 

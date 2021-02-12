@@ -1,10 +1,10 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( !class_exists( 'WC_Payment_Gateway' ) ) {
+if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
 	return;
 }
 
@@ -21,7 +21,7 @@ function wcwspay_add_gateway( $methods ) {
 }
 add_filter( 'woocommerce_payment_gateways', 'wcwspay_add_gateway' );
 
-if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
+if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 	class WC_WSPay_Payment_Gateway extends WC_Payment_Gateway {
 
 		/**
@@ -47,7 +47,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @codeCoverageIgnore
 		 */
 		public function __construct() {
-			$dir_path = dirname( plugin_dir_path(__FILE__) );
+			$dir_path = dirname( plugin_dir_path( __FILE__ ) );
 			require_once( 'class-wc-wspay.php' );
 			require_once( $dir_path . '/utilities/class-wc-wspay-logger.php' );
 
@@ -88,7 +88,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			if ( $this->settings['use-mailer'] === 'yes' ) {
 				$this->logger->enable_mailer( $this->settings['mailer-address'], $this->settings['mailer-min-log-level'] );
 			}
-			$this->wspay = new WC_WSPay($this->logger);
+			$this->wspay = new WC_WSPay( $this->logger );
 
 			$this->title = esc_attr( $this->settings['title'] );
 			$this->add_actions();
@@ -108,12 +108,12 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		}
 
 		public function show_additional_wspay_order_details( $order_id ) {
-			if ( !apply_filters( 'show_order_wspay_details', false ) ) {
+			if ( ! apply_filters( 'show_order_wspay_details', false ) ) {
 				return;
 			}
 
 			$order = wc_get_order( $order_id );
-			if ( !$order || !is_a( $order, 'WC_Order' ) ) {
+			if ( ! $order || ! is_a( $order, 'WC_Order' ) ) {
 				return;
 			}
 			?>
@@ -122,10 +122,10 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 					<?php _e( 'WSpay Order details', 'wcwspay' ); ?>
 				</h2>
 				<ul class="order_details">
-					<?php foreach( $this->response_fields as $key => $data ): ?>
-						<?php if ( apply_filters( 'show_order_detail_' . $key, true ) ): ?>
+					<?php foreach ( $this->response_fields as $key => $data ) : ?>
+						<?php if ( apply_filters( 'show_order_detail_' . $key, true ) ) : ?>
 							<?php $value = apply_filters( $key . '_order_details_value', $order->get_meta( $key, true ) ); ?>
-							<?php if ( $value !== '' ): ?>
+							<?php if ( $value !== '' ) : ?>
 								<li class="wspay-order-details__item <?php esc_attr_e( $key ); ?>">
 									<?php echo apply_filters( $key . '_order_details_label', $data['title'] ); ?>:
 									<strong><?php echo $value; ?></strong>
@@ -166,7 +166,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @override
 		 */
 		public function payment_fields() {
-			if ( isset( $this->settings['description-msg'] ) && !empty( $this->settings['description-msg'] ) ) {
+			if ( isset( $this->settings['description-msg'] ) && ! empty( $this->settings['description-msg'] ) ) {
 				echo wptexturize( $this->settings['description-msg'] );
 			}
 		}
@@ -175,7 +175,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * Echo confirmation message on the 'thank you' page.
 		 */
 		public function show_confirmation_message() {
-			if ( isset( $this->settings['confirmation-msg'] ) && !empty( $this->settings['confirmation-msg'] ) ) {
+			if ( isset( $this->settings['confirmation-msg'] ) && ! empty( $this->settings['confirmation-msg'] ) ) {
 				echo '<p>' . wptexturize( $this->settings['confirmation-msg'] ) . '</p>';
 			}
 		}
@@ -184,7 +184,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * Echo redirect message on the 'receipt' page.
 		 */
 		private function show_receipt_message() {
-			if ( isset( $this->settings['receipt-redirect-msg'] ) && !empty( $this->settings['receipt-redirect-msg'] ) ) {
+			if ( isset( $this->settings['receipt-redirect-msg'] ) && ! empty( $this->settings['receipt-redirect-msg'] ) ) {
 				echo '<p>' . wptexturize( $this->settings['receipt-redirect-msg'] ) . '</p>';
 			}
 		}
@@ -196,7 +196,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		public function do_receipt_page( $order_id ) {
 			$auto_redirect = $this->settings['auto-redirect'] === 'yes';
-			if ( !$auto_redirect ) {
+			if ( ! $auto_redirect ) {
 				$this->show_receipt_message();
 				$this->logger->log( 'Displaying redirect form for user\'s Order #' . $order_id . '.' );
 			} else {
@@ -207,14 +207,14 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 				$this->settings['shop-id'], $this->settings['secret-key'],
 				$this->settings['form-language']
 			);
-			if ( empty( $wspay_params ) || !is_array( $wspay_params ) ) {
+			if ( empty( $wspay_params ) || ! is_array( $wspay_params ) ) {
 				$this->logger->log( 'Failed generating WsPay form.', 'critical' );
 				return;
 			}
 
 			$request_url = $this->wspay->get_request_url( $this->settings['use-wspay-sandbox'] === 'yes' );
 
-			echo $this->get_params_form( $request_url, $wspay_params, !$auto_redirect );
+			echo $this->get_params_form( $request_url, $wspay_params, ! $auto_redirect );
 			if ( $auto_redirect ) {
 				$this->enqueue_redirect_js();
 			}
@@ -226,9 +226,9 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		private function enqueue_redirect_js() {
 			// it's safe to use $ with woocommerce
 			// if there's no redirect after 10 seconds, unblock the UI
-			wc_enqueue_js("$('.card').block({message: null, overlayCSS: { background: '#fff', opacity: 0.6 }});");
-			wc_enqueue_js("setTimeout(function(){ $('.card').unblock(); }, 10000);");
-			wc_enqueue_js("$('#wcwspay-form').submit();");
+			wc_enqueue_js( "$('.card').block({message: null, overlayCSS: { background: '#fff', opacity: 0.6 }});" );
+			wc_enqueue_js( "setTimeout(function(){ $('.card').unblock(); }, 10000);" );
+			wc_enqueue_js( "$('#wcwspay-form').submit();" );
 		}
 
 		/**
@@ -240,7 +240,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 */
 		private function get_params_form( $request_url, $wspay_params, $show_controls = true ) {
 			$form = '<form action="' . esc_attr( $request_url ) . '" method="POST" name="pay" id="wcwspay-form">';
-			foreach( $wspay_params as $key => $param ) {
+			foreach ( $wspay_params as $key => $param ) {
 				$form .= '<input type="hidden" name="' . esc_attr( $key ) . '" value="' . esc_attr( $param ) . '" />';
 			}
 
@@ -262,7 +262,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		 * @param string $url
 		 */
 		public function call_redirect( $url ) {
-			if ( !headers_sent() ) {
+			if ( ! headers_sent() ) {
 				wp_safe_redirect( $url );
 				exit;
 			}
@@ -277,9 +277,9 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$response = $_GET;
 			$this->logger->log( 'Response received from WSPay.' );
 			// does the response contain min of information
-			if ( !isset( $response['Success'] ) || !isset( $response['ShoppingCartID'] ) ) {
+			if ( ! isset( $response['Success'] ) || ! isset( $response['ShoppingCartID'] ) ) {
 				$this->logger->log( 'WsPay response is invalid.', 'error' );
-				if( function_exists( 'wc_add_notice' ) ) {
+				if ( function_exists( 'wc_add_notice' ) ) {
 					wc_add_notice( __( 'Payment unsuccesful', 'wcwspay' ) . '! ' . __( 'Try again or contact site administrator.' ), $notice_type = 'error' );
 				}
 				return $this->call_redirect( wc_get_checkout_url() );
@@ -289,21 +289,21 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			$order_id = intval( $response['ShoppingCartID'] );
 			$order    = wc_get_order( $order_id );
 			// is the provided order ID valid?
-			if ( !is_a( $order, 'WC_Order' ) ) {
+			if ( ! is_a( $order, 'WC_Order' ) ) {
 				$this->logger->log( 'Order #' . $order_id . ' not found', 'critical' );
-				if( function_exists( 'wc_add_notice' ) ) {
+				if ( function_exists( 'wc_add_notice' ) ) {
 					wc_add_notice( __( 'Payment unsuccesful', 'wcwspay' ) . '! ' . __( 'Try again or contact site administrator.' ), $notice_type = 'error' );
 				}
 				return $this->call_redirect( wc_get_checkout_url() );
 			}
 
-			if ( !$this->wspay->is_response_valid( $response, $order ) ) {
+			if ( ! $this->wspay->is_response_valid( $response, $order ) ) {
 				return $this->call_redirect( wc_get_checkout_url() );
 			}
 
-			if ( !isset( $response['ApprovalCode'] ) || !isset( $response['Signature'] ) ) {
+			if ( ! isset( $response['ApprovalCode'] ) || ! isset( $response['Signature'] ) ) {
 				$this->logger->log( 'ApprovalCode or Signature missing from Order #' . $order->get_order_number() . ' WsPay response.', 'error' );
-				if( function_exists( 'wc_add_notice' ) ) {
+				if ( function_exists( 'wc_add_notice' ) ) {
 					wc_add_notice( __( 'Payment unsuccesful', 'wcwspay' ) . '! ' . __( 'Try again or contact site administrator.' ), $notice_type = 'error' );
 				}
 				return $this->call_redirect( wc_get_checkout_url() );
@@ -344,7 +344,7 @@ if ( !class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			foreach ( $this->response_fields as $wc_key => $data ) {
 				if ( isset( $response[ $data['wspay_key'] ] ) ) {
 					if ( in_array( $data['wspay_key'], $empty_check ) ) {
-						if ( !empty( $response[ $data['wspay_key'] ] ) ) {
+						if ( ! empty( $response[ $data['wspay_key'] ] ) ) {
 							$order->add_meta_data( $wc_key, $response[ $data['wspay_key'] ], true );
 						}
 					} else if ( $response[ $data['wspay_key'] ] !== '' ) {

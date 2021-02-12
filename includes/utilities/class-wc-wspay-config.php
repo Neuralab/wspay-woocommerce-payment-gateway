@@ -1,11 +1,11 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 
-if ( !class_exists( 'WC_WSPay_Config' ) ) {
+if ( ! class_exists( 'WC_WSPay_Config' ) ) {
 	class WC_WSPay_Config {
 
 		private $data = null;
@@ -24,11 +24,11 @@ if ( !class_exists( 'WC_WSPay_Config' ) ) {
 		 * @return boolean
 		 */
 		public function load_from_file( $file_name = 'config.json' ) {
-			$current_dir = dirname( plugin_dir_path(__FILE__) );
+			$current_dir = dirname( plugin_dir_path( __FILE__ ) );
 			try {
 				$this->data = json_decode( file_get_contents( dirname( $current_dir ) . '/' . $file_name ) );
 				return true;
-			} catch( Exception $ex ) {
+			} catch ( Exception $ex ) {
 				$this->data = null;
 			}
 

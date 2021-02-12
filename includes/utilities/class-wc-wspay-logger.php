@@ -1,11 +1,11 @@
 <?php
 
-if ( !defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
 
-if ( !class_exists( 'WC_WSPay_Logger' ) ) {
+if ( ! class_exists( 'WC_WSPay_Logger' ) ) {
 	class WC_WSPay_Logger {
 
 		/**
@@ -90,7 +90,7 @@ if ( !class_exists( 'WC_WSPay_Logger' ) ) {
 
 			$log_level_index = array_search( $min_log_level, $this->log_levels, true );
 			if ( $log_level_index !== false ) {
-				$this->mailer_min_log_level = $min_log_level;
+				$this->mailer_min_log_level       = $min_log_level;
 				$this->mailer_min_log_level_index = $log_level_index;
 			} else {
 				return false;
@@ -136,7 +136,7 @@ if ( !class_exists( 'WC_WSPay_Logger' ) ) {
 				}
 
 				// check if provided level is valid!
-				if ( !in_array( $level, $this->log_levels ) ) {
+				if ( ! in_array( $level, $this->log_levels ) ) {
 					$this->log( 'Invalid log level provided: ' . $level, 'debug' );
 					$level = 'notice';
 				}
@@ -167,14 +167,14 @@ if ( !class_exists( 'WC_WSPay_Logger' ) ) {
 
 			$log_level_index = array_search( $level, $this->log_levels, true );
 			// mail should be sent only if the log level is greater or equal than defined min
-			if ( !$log_level_index || $log_level_index > $this->mailer_min_log_level_index ) {
+			if ( ! $log_level_index || $log_level_index > $this->mailer_min_log_level_index ) {
 				return false;
 			}
 
 			$subject = __( 'WSpay Gateway', 'wcwspay' ) . ' ' . ucfirst( $level ) .
 			' ' . __( 'notice', 'wcwspay' );
 
-			$body = ucfirst( $level ) . ' ' . __( 'event was logged at', 'wcwspay' ) .
+			$body  = ucfirst( $level ) . ' ' . __( 'event was logged at', 'wcwspay' ) .
 			' ' . date( 'd.m.Y. H:i:s' ) . ".\n";
 			$body .= __( 'Event message', 'wcwspay' ) . ': ' . $message . "\n\n\n";
 			$body .= 'Neuralab WooCommerce WSpay Payment Gateway';
