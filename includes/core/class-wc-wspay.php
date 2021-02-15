@@ -57,8 +57,8 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 					}
 				} else {
 					$this->maybe_log( 'Payment for Order #' . $order->get_order_number() . ' unsuccesful. Reason: ' . $response['ErrorMessage'], 'error' );
-					$order->update_status( 'pending', __( 'Payment unsuccesful! Reason: ' . $response['ErrorMessage'], 'wcwspay' ) );
-
+					/* translators: %s: error message */
+					$order->update_status( 'pending', sprintf( esc_html__( 'Payment unsuccesful! Reason: %s', 'wcwspay' ), $response['ErrorMessage'] ) );
 					if ( function_exists( 'wc_add_notice' ) ) {
 						wc_add_notice( __( 'Payment unsuccesful', 'wcwspay' ) . '! ' . __( 'Try again or contact site administrator.' ), $notice_type = 'error' );
 					}
