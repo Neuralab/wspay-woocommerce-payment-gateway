@@ -221,7 +221,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 
 			$request_url = $this->wspay->get_request_url( $this->settings['use-wspay-sandbox'] === 'yes' );
 
-			echo $this->get_params_form( $request_url, $wspay_params, ! $auto_redirect );
+			echo $this->get_params_form( $request_url, $wspay_params, ! $auto_redirect ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if ( $auto_redirect ) {
 				$this->enqueue_redirect_js();
 			}
