@@ -281,7 +281,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		public function process_wspay_response() {
 			global $woocommerce;
 
-			$response = $_GET;
+			$response = $_GET; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$this->logger->log( 'Response received from WSPay.' );
 			// does the response contain min of information
 			if ( ! isset( $response['Success'] ) || ! isset( $response['ShoppingCartID'] ) ) {
