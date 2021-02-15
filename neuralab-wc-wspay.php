@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Plugin Name: Neuralab WooCommerce WSPay Payment Gateway
  * Plugin URI: https://github.com/Neuralab/WSPay-WooCommerce-Payment-Gateway
