@@ -27,7 +27,7 @@ if ( ! class_exists( 'WC_WSPay_Config' ) ) {
 		public function load_from_file( $file_name = 'config.json' ) {
 			$current_dir = dirname( plugin_dir_path( __FILE__ ) );
 			try {
-				$this->data = json_decode( file_get_contents( dirname( $current_dir ) . '/' . $file_name ) );
+				$this->data = json_decode( file_get_contents( dirname( $current_dir ) . '/' . $file_name ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 				return true;
 			} catch ( Exception $ex ) {
 				$this->data = null;
