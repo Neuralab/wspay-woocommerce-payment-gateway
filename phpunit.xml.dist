@@ -8,18 +8,18 @@
   convertWarningsToExceptions="true"
 >
   <testsuites>
-    <testsuite>
+    <testsuite name="Default">
       <directory prefix="test-" suffix=".php">./tests/</directory>
     </testsuite>
   </testsuites>
 
   <filter>
-    <blacklist>
-      <directory suffix=".php">./tests/vendors/</directory>
-    </blacklist>
     <whitelist processUncoveredFilesFromWhitelist="true">
       <file>./neuralab-wc-wspay.php</file>
       <directory prefix="class-" suffix=".php">./includes</directory>
+      <exclude>
+        <directory suffix=".php">./tests/vendors/</directory>
+      </exclude>
     </whitelist>
   </filter>
   <logging>

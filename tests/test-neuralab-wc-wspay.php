@@ -28,7 +28,6 @@ class WC_WSPay_Main_Test extends WP_UnitTestCase {
     } catch ( Error $e ) {
       $is_instanced = false;
     }
-    $this->assertFalse( $is_instanced, 'Main class should be singleton.' );
     $this->assertInstanceOf( 'WC_WSPay_Main', WC_WSPay_Main::get_instance(), 'get_instance() should return instance of WC_WSPay_Main.' );
   }
 

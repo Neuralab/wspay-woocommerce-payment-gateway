@@ -72,6 +72,7 @@ class WC_WSPay_Test extends WP_UnitTestCase {
     $shop_id    = 'fake-shop-id';
     $secret_key = 'fake-secret-key';
     $form_lang  = 'EN';
+    $integrated_checkout  = false;
 
     $order->set_billing_address_2( 'Testing Billing Address 2' );
     $order->save();
@@ -82,10 +83,10 @@ class WC_WSPay_Test extends WP_UnitTestCase {
       array( 'ShopID', 'ShoppingCartID', 'TotalAmount', 'Signature' )
     );
 
-    $params = $this->wspay->get_wspay_params( $gateway->id, $order->get_id(), '', '', '' );
+    $params = $this->wspay->get_wspay_params( $gateway->id, $order->get_id(), '', '', '', '' );
     $this->assertFalse( $params, 'get_wspay_params() should return false if invalid parameters provided.' );
 
-    $params = $this->wspay->get_wspay_params( $gateway->id, $order->get_id(), $shop_id, $secret_key, $form_lang );
+    $params = $this->wspay->get_wspay_params( $gateway->id, $order->get_id(), $shop_id, $secret_key, $form_lang, $integrated_checkout );
     foreach ($required_params as $required_param) {
       $this->assertArrayHasKey( $required_param, $params, 'get_wspay_params() should return an array with "' . $required_param . '" key.' );
     }
@@ -99,5 +100,10 @@ class WC_WSPay_Test extends WP_UnitTestCase {
     $this->assertRegExp( '/^[a-f0-9]{32}$/', $params['Signature'] );
     // is valid price format (xx,xx)
     $this->assertRegExp( '/^\d+,\d{1,2}$/', $params['TotalAmount'] );
+
+    $integrated_checkout  = true;
+	$params = $this->wspay->get_wspay_params( $gateway->id, $order->get_id(), $shop_id, $secret_key, $form_lang, $integrated_checkout );
+	$this->assertTrue( $params['Iframe'] === 'True', '"Iframe" should be set to True.' );
+	$this->assertTrue( $params['IframeResponseTarget'] === 'TOP', '"IframeResponseTarget" should be set to TOP.' );
   }
 }

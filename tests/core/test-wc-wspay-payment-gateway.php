@@ -113,6 +113,12 @@ class WC_WSPay_Payment_Gateway_Test extends WP_UnitTestCase {
     $this->gateway->do_receipt_page( $order->get_id() );
     $result = ob_get_clean();
 
+    $this->assertInternalType( 'string', $result, 'do_receipt_page() method should echo a string.' );
+    $this->assertRegExp( '/<\s?[^\>]*\/?\s?>/i', $result, 'do_receipt_page() method should echo a HTML string.' );
+
+    $this->assertStringStartsWith( '<p', $result, 'Receipt page form should start with <form> tag' );
+    $this->assertStringEndsWith( '</form>', $result, 'Receipt page form should end with <form> tag' );
+
     $this->gateway->settings['auto-redirect'] = 'yes';
     ob_start();
     $this->gateway->do_receipt_page( $order->get_id() );
@@ -123,6 +129,22 @@ class WC_WSPay_Payment_Gateway_Test extends WP_UnitTestCase {
 
     $this->assertStringStartsWith( '<form', $result, 'Receipt page form should start with <form> tag' );
     $this->assertStringEndsWith( '</form>', $result, 'Receipt page form should end with <form> tag' );
+
+	$this->gateway->settings['auto-redirect'] = 'yes';
+	$this->gateway->settings['integrated-checkout'] = 'yes';
+	ob_start();
+	$this->gateway->do_receipt_page( $order->get_id() );
+	$result = ob_get_clean();
+
+	$this->assertInternalType( 'string', $result, 'do_receipt_page() method should echo a string.' );
+	$this->assertRegExp( '/<\s?[^\>]*\/?\s?>/i', $result, 'do_receipt_page() method should echo a HTML string.' );
+
+	$this->assertStringStartsWith( '<form', $result, 'Receipt page form should start with <form> tag' );
+	$this->assertStringEndsWith( '</iframe>', $result, 'Receipt page form should end with <iframe> tag' );
+
+	$this->assertRegExp('/id="wspay-form-integrated-checkout-iframe"/', $result, 'Receipt page should have iframe with id #wspay-form-integrated-checkout-iframe');
+	$this->assertRegExp('/name="Iframe" value="True"/', $result, 'Receipt page should have fiel Iframe, value True');
+	$this->assertRegExp('/name="IframeResponseTarget" value="TOP"/', $result, 'Receipt page should have fiel IframeResponseTarget, value TOP');
   }
 
   /**
