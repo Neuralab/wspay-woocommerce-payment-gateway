@@ -3,7 +3,7 @@
  * Plugin Name: Neuralab WooCommerce WSPay Payment Gateway
  * Plugin URI: https://github.com/Neuralab/WSPay-WooCommerce-Payment-Gateway
  * Description: WooCommerce WSPay Payment Gateway
- * Version: 0.9.4
+ * Version: 0.9.5
  * Author: Neuralab
  * Author URI: https://neuralab.net
  * Developer: Matej
@@ -51,7 +51,7 @@ if ( ! function_exists( 'wcwspay_admin_notice_missing_woocommerce' ) ) {
 				<p>
 					<?php
 						/* translators: %s: link to WooCommerce */
-						echo sprintf( esc_html__( 'Please install and activate %s before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ), '<a href="http://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a>' );
+						echo sprintf( esc_html__( 'Please install and activate %s before activating the Neuralab WooCommerce WSPay Payment Gateway!', 'wcwspay' ), '<a href="https://www.woothemes.com/woocommerce/" target="_blank">WooCommerce</a>' );
 					?>
 				</p>
 			</div>
@@ -72,7 +72,7 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		 *
 		 * @var string
 		 */
-		const VERSION = '0.9.4';
+		const VERSION = '0.9.5';
 
 		/**
 		 * Instance of the current class, null before first usage.
@@ -87,8 +87,24 @@ if ( ! class_exists( 'WC_WSPay_Main' ) ) {
 		 * @codeCoverageIgnore
 		 * @since 0.1
 		 */
-		protected function __construct() {
+		public function __construct() {
+			self::register_constants();
 			require_once 'includes/core/class-wc-wspay-payment-gateway.php';
+		}
+
+		/**
+		 * Register plugin's constants.
+		 */
+		public static function register_constants() {
+			if ( ! defined( 'WSPAY_PLUGIN_ID' ) ) {
+				define( 'WSPAY_PLUGIN_ID', 'WSPay-WooCommerce-Payment-Gateway' );
+			}
+			if ( ! defined( 'WSPAY_DIR_URL' ) ) {
+				define( 'WSPAY_DIR_URL', plugin_dir_url( __FILE__ ) );
+			}
+			if ( ! defined( 'WSPAY_IFRAME_ID' ) ) {
+				define( 'WSPAY_IFRAME_ID', 'wspay-form-integrated-checkout-iframe' );
+			}
 		}
 
 		/**

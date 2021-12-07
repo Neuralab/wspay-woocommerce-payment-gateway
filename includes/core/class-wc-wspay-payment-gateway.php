@@ -91,6 +91,12 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 				$this->logger->enable_mailer( $this->settings['mailer-address'], $this->settings['mailer-min-log-level'] );
 			}
 			$this->wspay = new WC_WSPay( $this->logger );
+			if ( $this->settings['integrated-checkout'] === 'yes' ) {
+				$this->form_fields['auto-redirect']['description']       .= ' ' . __( 'Because Integrated Checkout is used, automatic redirect is forced.', 'wcwspay' );
+				$this->form_fields['auto-redirect']['custom_attributes'] = [
+					'readonly' => 'readonly',
+				];
+			}
 
 			$this->title = esc_attr( $this->settings['title'] );
 			$this->add_actions();
@@ -207,12 +213,18 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 				$this->logger->log( 'Redirecting user\'s Order #' . $order_id . ' to WsPay form.' );
 			}
 
+			$integrated_checkout = ! empty( $this->settings['integrated-checkout'] ) && $this->settings['integrated-checkout'] === 'yes';
+			if ( $integrated_checkout ) {
+				$this->logger->log( 'Loading Iframe for integrated checkout for Order #' . $order_id );
+			}
+
 			$wspay_params = $this->wspay->get_wspay_params(
 				$this->id,
 				$order_id,
 				$this->settings['shop-id'],
 				$this->settings['secret-key'],
-				$this->settings['form-language']
+				$this->settings['form-language'],
+				$integrated_checkout
 			);
 			if ( empty( $wspay_params ) || ! is_array( $wspay_params ) ) {
 				$this->logger->log( 'Failed generating WsPay form.', 'critical' );
@@ -221,9 +233,14 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 
 			$request_url = $this->wspay->get_request_url( $this->settings['use-wspay-sandbox'] === 'yes' );
 
-			echo $this->get_params_form( $request_url, $wspay_params, ! $auto_redirect ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo $this->get_params_form( $request_url, $wspay_params, ! $auto_redirect, $integrated_checkout ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			if ( $auto_redirect ) {
 				$this->enqueue_redirect_js();
+			}
+
+			if ($integrated_checkout){
+				echo $this->render_form_iframe();
+				$this->enqueue_iframe_resizer();
 			}
 		}
 
@@ -239,14 +256,40 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 		}
 
 		/**
+		 * Render Iframe to load WSPay form for integrated checkout.
+		 */
+		private function render_form_iframe(): string {
+			return '<iframe name="' . WSPAY_IFRAME_ID . '" id="' . WSPAY_IFRAME_ID . '" style="width: 100%"></iframe>';
+		}
+
+		/**
+		 * Enqueue Iframe Resizer dynamically https://github.com/davidjbradshaw/iframe-resizer
+		 */
+		private function enqueue_iframe_resizer() {
+			wp_enqueue_script( 'wspay-client-script', WSPAY_DIR_URL . '/assets/js/wspay.js', [ 'jquery' ], WC_WSPay_Main::VERSION, true );
+			wp_enqueue_style( 'wspay-client-style', WSPAY_DIR_URL . '/assets/css/wspay.css' );
+			wp_localize_script(
+				'wspay-client-script',
+				'wspayClientScript',
+				[
+					'wspayIframeId'   => '#' . WSPAY_IFRAME_ID,
+					'iframeResizerJs' => WSPAY_DIR_URL . '/assets/js/iframeResizer.min.js',
+				]
+			);
+
+		}
+
+		/**
 		 * Convert WSPay parameters to HTML form with inputs representing parameters.
 		 *
 		 * @param string $request_url
 		 * @param array  $wspay_params
+		 * @param boolean  $show_controls
+		 * @param boolean  $integrated_checkout
 		 * @return string
 		 */
-		private function get_params_form( $request_url, $wspay_params, $show_controls = true ) {
-			$form = '<form action="' . esc_attr( $request_url ) . '" method="POST" name="pay" id="wcwspay-form">';
+		private function get_params_form( $request_url, $wspay_params, $show_controls = true, $integrated_checkout = false ) {
+			$form = '<form action="' . esc_attr( $request_url ) . '" method="POST" name="pay" id="wcwspay-form"' . ( $integrated_checkout ? ' target="' . WSPAY_IFRAME_ID . '"' : '' ) . '>';
 			foreach ( $wspay_params as $key => $param ) {
 				$form .= '<input type="hidden" name="' . esc_attr( $key ) . '" value="' . esc_attr( $param ) . '" />';
 			}
@@ -381,5 +424,22 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 			];
 		}
 
+		/**
+		 * Extend saving of settings to force auto-redirect on integrated checkout
+		 *
+		 * @override
+		 * @return bool
+		 */
+		public function process_admin_options() {
+			$settings_updated = parent::process_admin_options();
+
+			if ( $this->settings['integrated-checkout'] === 'yes' && $this->settings['auto-redirect'] === 'no' ) {
+				$this->settings['auto-redirect'] = 'yes'; # Force auto redirect when using integrated checkout
+
+				return update_option( $this->get_option_key(), apply_filters( 'woocommerce_settings_api_sanitized_fields_' . $this->id, $this->settings ), 'yes' );
+			}
+
+			return $settings_updated;
+		}
 	}
 }

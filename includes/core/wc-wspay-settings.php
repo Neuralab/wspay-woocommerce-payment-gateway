@@ -86,6 +86,14 @@ return [
 		'default'     => 'yes',
 		'desc_tip'    => true,
 	],
+	'integrated-checkout'        => [
+		'title'       => __( 'Integrated checkout', 'wcwspay' ),
+		'type'        => 'checkbox',
+		'label'       => __( 'Show WSPay Form on checkout page.', 'wcwspay' ),
+		'description' => __( 'This option keeps the customer on the shop\'s site during entering of the payment details.', 'wcwspay' ),
+		'default'     => 'no',
+		'desc_tip'    => true,
+	],
 	'use-wspay-sandbox'    => [
 		'title'       => __( 'WSPay Sandbox', 'wcwspay' ),
 		'type'        => 'checkbox',

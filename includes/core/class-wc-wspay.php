@@ -90,9 +90,10 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 		 * @param string $shop_id
 		 * @param string $secret_key
 		 * @param string $form_lang
+		 * @param boolean $integrated_checkout
 		 * @return array|boolean
 		 */
-		public function get_wspay_params( $gateway_id, $order_id, $shop_id, $secret_key, $form_lang ) {
+		public function get_wspay_params( $gateway_id, $order_id, $shop_id, $secret_key, $form_lang, $integrated_checkout ) {
 			global $woocommerce;
 			$order = new WC_Order( $order_id );
 
@@ -127,6 +128,11 @@ if ( ! class_exists( 'WC_WSPay' ) ) {
 
 			if ( ! empty( $order->get_billing_address_2() ) ) {
 				$wspay_params['CustomerAddress'] .= ', ' . $order->get_billing_address_2();
+			}
+
+			if ( $integrated_checkout) {
+				$wspay_params['Iframe']               = 'True';
+				$wspay_params['IframeResponseTarget'] = 'TOP';
 			}
 
 			return $wspay_params;
