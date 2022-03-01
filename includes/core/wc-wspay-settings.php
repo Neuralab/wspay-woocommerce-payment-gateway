@@ -91,8 +91,7 @@ return [
 		'type'        => 'checkbox',
 		'label'       => __( 'Show WSPay Form on checkout page.', 'wcwspay' ),
 		'description' => __( 'This option keeps the customer on the shop\'s site during entering of the payment details.', 'wcwspay' ),
-		'default'     => 'no',
-		'desc_tip'    => true,
+		'default'     => 'no'
 	],
 	'use-wspay-sandbox'    => [
 		'title'       => __( 'WSPay Sandbox', 'wcwspay' ),

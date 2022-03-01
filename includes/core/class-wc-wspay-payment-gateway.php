@@ -95,6 +95,7 @@ if ( ! class_exists( 'WC_WSPay_Payment_Gateway' ) ) {
 				$this->form_fields['auto-redirect']['description']       .= ' ' . __( 'Because Integrated Checkout is used, automatic redirect is forced.', 'wcwspay' );
 				$this->form_fields['auto-redirect']['custom_attributes'] = [
 					'readonly' => 'readonly',
+					'disabled' => 'disabled'
 				];
 			}
 
